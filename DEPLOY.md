@@ -47,12 +47,15 @@ project to **Settings → Builds & deployments → Automatic deployments: Disabl
 (or disconnect the Git integration entirely). If you prefer the dashboard path
 instead, pause/delete `.github/workflows/deploy.yml` — but never run both.
 
-Install history (Sep 2025): an earlier `package-lock.json` committed from
-Windows failed strict `npm ci` sync on Linux ("Missing: @emnapi/core /
-@emnapi/runtime from lock file"). Fixed by regenerating the lockfile (correct
-`dev`/`optional` flags on `@emnapi/wasi-threads 1.2.3` + `tslib 2.8.1`);
-`npm ci --dry-run` + `npm run lint` both exit 0 locally, and both workflows
-are back on `npm ci`.
+Install history (Sep 2025): strict `npm ci` failed on Linux with "Missing:
+@emnapi/core@1.11.3 / @emnapi/runtime@1.11.3 from lock file" followed by the
+full `npm ci` usage dump (this same trace appears in Cloudflare Pages build
+logs). Cause: the lockfile was missing the `@emnapi/core`/`@emnapi/runtime`
+entries required by `@tailwindcss/oxide-wasm32-wasi`'s `bundleDependencies` —
+Windows npm 11.6.2 doesn't enforce that check, npm 11.19.0 (bundled with
+node 24 on ubuntu-latest) does. Regenerated `package-lock.json` with npm
+11.19.0 in a `node:24` container; `npm ci` now exits 0 on both Linux and
+Windows, and both workflows run `npm ci`.
 
 Local build & test:
 - Install deps: `npm ci`

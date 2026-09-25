@@ -21,11 +21,10 @@ jobs:
         with:
           node-version: 24
 
-      # Same install rule as CI: strict `npm ci` — see ci.yml. A regenerated
-      # package-lock.json (correct dev/optional flags on the wasm32-wasi
-      # @emnapi subtrees) fixed the "Missing: @emnapi/core / @emnapi/runtime
-      # from lock file" sync failure, so `cache: npm` stays off only to avoid
-      # re-introducing the check-before-install path.
+      # Same install rule as CI: strict `npm ci` - see ci.yml. The lockfile is
+      # regenerated with npm 11.19.0 (node:24 container) so the Linux builder's
+      # strict sync check passes; `cache: npm` stays off because it runs the
+      # same check before install executes.
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 

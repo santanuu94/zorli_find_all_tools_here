@@ -18,14 +18,14 @@ jobs:
         with:
           node-version: 24
 
-      # Root cause (Sep 2025): the lockfile committed from Windows recorded
-      # Windows-resolved platform-specific optional bindings but `npm ci` on the
-      # Pages Linux builder (and the setup-node cache step in CI) runs a strict
-      # package.json/lock sync check and failed on the wasm32-wasi subtrees:
-      # "Missing: @emnapi/core / @emnapi/runtime from lock file". Fixed by
-      # regenerating package-lock.json so the `@emnapi/wasi-threads 1.2.3` /
-      # `tslib 2.8.1` entries carry correct `dev`/`optional` flags; `npm ci`
-      # --dry-run now passes locally and every pipeline uses `npm ci` again.
+      # Root cause (Sep 2025): package-lock.json was missing the
+      # `@emnapi/core` + `@emnapi/runtime` entries required by
+      # `@tailwindcss/oxide-wasm32-wasi`'s bundleDependencies. Windows npm
+      # 11.6 never enforces this, but npm 11.19 (node 24's bundled npm, i.e.
+      # ubuntu-latest) fails: "Missing: @emnapi/core@1.11.3 from lock file"
+      # followed by the full `npm ci` usage dump. Fixed by regenerating
+      # package-lock.json with npm 11.19.0 inside a node:24 container;
+      # `npm ci` verified exit 0 on Linux npm 11.19.0 AND Windows npm 11.6.2.
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 

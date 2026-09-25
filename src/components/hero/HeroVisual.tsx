@@ -14,19 +14,14 @@ export const HeroVisual: React.FC = () => {
       <div className="absolute w-[280px] h-[280px] sm:w-[330px] sm:h-[330px] rounded-full border border-violet-400/45 dark:border-violet-400/30 border-dashed pointer-events-none animate-[spin_45s_linear_infinite_reverse]" />
 
       {/* Orbiting Sparkle Star (CSS-only orbit) */}
-      <div
-        className="absolute w-[360px] h-[360px] sm:w-[430px] sm:h-[430px] pointer-events-none anim-orbit"
-      >
+      <div className="absolute w-[360px] h-[360px] sm:w-[430px] sm:h-[430px] pointer-events-none anim-orbit">
         <div className="absolute top-2 left-1/2 -translate-x-1/2">
           <ZorliSparkle size={18} variant="cyan" />
         </div>
       </div>
 
       {/* Handwritten Annotation with Arrow (CSS-only entrance) */}
-      <div
-        className="absolute -right-2 top-28 sm:right-2 sm:top-24 z-20 pointer-events-none text-right anim-fade-scale-in"
-        style={{ animationDelay: '0.5s' }}
-      >
+      <div className="absolute -right-2 top-28 sm:right-2 sm:top-24 z-20 pointer-events-none text-right anim-fade-scale-in" style={{ animationDelay: '0.5s' }}>
         <div className="font-hand text-2xl sm:text-3xl text-indigo-900 dark:text-indigo-200 rotate-6 tracking-wide drop-shadow-[0_2px_8px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] font-semibold">
           All your tools.
           <br />

@@ -31,22 +31,37 @@ jobs:
       - name: Build
         run: npm run build
 
-      # In a non-interactive context (CI, piped input) `wrangler pages deploy` refuses
-      # to create a --project-name that does not exist yet: it exits 1 with "project
-      # not found". Create the project explicitly first. This step is idempotent - on
-      # later runs it fails with "already exists", which continue-on-error tolerates
-      # because the next step is the one that actually publishes.
-      - name: Ensure Cloudflare Pages project exists
-        uses: cloudflare/wrangler-action@v3
-        continue-on-error: true
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages project create zorli --production-branch=main
-
+      # `wrangler pages deploy` cannot create a missing --project-name in a
+      # non-interactive context (CI, piped input), so the project is created first.
+      # Wrangler is run directly instead of through wrangler-action so that its real
+      # error text lands in the job summary as well as the log: the action only ever
+      # reports "Action failed / npx failed with exit code 1", which hides the cause.
       - name: Publish to Cloudflare Pages
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=zorli --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -uo pipefail
+
+          # Failure here is expected from the second run onwards ("already exists"),
+          # so it is reported but not fatal - the deploy below is what matters.
+          if ! npx --yes wrangler@4 pages project create zorli --production-branch=main > create.log 2>&1; then
+            {
+              echo '`pages project create` output (expected once the project exists):'
+              echo '```'
+              tail -n 25 create.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if npx --yes wrangler@4 pages deploy dist --project-name=zorli --branch=main 2>&1 | tee deploy.log; then
+            echo 'Deployed `dist` to Cloudflare Pages (project `zorli`).' >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo 'Deploy failed. Last 40 lines of wrangler output:'
+              echo '```'
+              tail -n 40 deploy.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi

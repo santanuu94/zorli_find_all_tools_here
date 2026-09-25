@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" fill="none">
+  <defs>
+    <!-- Vibrant 3D Crystal Glass Gradient for Star with High Opacity -->
+    <linearGradient id="zorliGlassStar" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.98" />
+      <stop offset="18%" stop-color="#DDD6FE" stop-opacity="0.96" />
+      <stop offset="45%" stop-color="#8B5CF6" stop-opacity="0.98" />
+      <stop offset="75%" stop-color="#6366F1" stop-opacity="1" />
+      <stop offset="100%" stop-color="#1D4ED8" stop-opacity="1" />
+    </linearGradient>
+
+    <!-- Facet Glass Highlights -->
+    <linearGradient id="facetTopLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#C4B5FD" stop-opacity="0.3" />
+    </linearGradient>
+    <linearGradient id="facetBottomRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#1E1B4B" stop-opacity="0.75" />
+    </linearGradient>
+
+    <!-- Specular Rim Light -->
+    <linearGradient id="zorliGlassRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
+      <stop offset="30%" stop-color="#EDE9FE" stop-opacity="0.95" />
+      <stop offset="70%" stop-color="#A78BFA" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#4338CA" stop-opacity="1" />
+    </linearGradient>
+
+    <!-- Companion Mini Star Gradient -->
+    <linearGradient id="zorliMiniStarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="50%" stop-color="#C084FC" />
+      <stop offset="100%" stop-color="#38BDF8" />
+    </linearGradient>
+
+    <!-- Universal 3D Sculpted Glass Typography (Vibrant on Dark & Light) -->
+    <linearGradient id="zorliTextGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="30%" stop-color="#EEF2FF" />
+      <stop offset="65%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#4338CA" />
+    </linearGradient>
+
+    <!-- Multi-Layer Caustic & Drop Glow with High Opacity -->
+    <filter id="zorliGlassGlow" x="-40%" y="-30%" width="180%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#6366F1" flood-opacity="0.7" />
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#0F172A" flood-opacity="0.4" />
+    </filter>
+  </defs>
+
+  <g filter="url(#zorliGlassGlow)">
+    <!-- ================= 3D GLASS STAR (CENTERED AT X=120, Y=65) ================= -->
+    <g transform="translate(120, 65)">
+      <!-- Main Star Body Cutout -->
+      <path
+        d="M0 -52 C0 -24 9.5 -15 38 0 C9.5 15 0 24 0 52 C0 24 -9.5 15 -38 0 C-9.5 -15 0 -24 0 -52 Z"
+        fill="url(#zorliGlassStar)"
+        stroke="url(#zorliGlassRim)"
+        stroke-width="3"
+        stroke-linejoin="round"
+      />
+
+      <!-- Crystal Facet 1: Top-Left Light Flange -->
+      <path
+        d="M0 -52 C0 -24 -9.5 -15 -38 0 L0 0 Z"
+        fill="url(#facetTopLeft)"
+        stroke="#FFFFFF"
+        stroke-opacity="0.75"
+        stroke-width="1.2"
+      />
+
+      <!-- Crystal Facet 2: Bottom-Right Shaded Flange -->
+      <path
+        d="M0 52 C0 24 9.5 15 38 0 L0 0 Z"
+        fill="url(#facetBottomRight)"
+      />
+
+      <!-- Diagonal Glass Refraction Slice -->
+      <path
+        d="M-30 -4 L30 4 L0 0 Z"
+        fill="#FFFFFF"
+        fill-opacity="0.5"
+      />
+      <path
+        d="M-4 -40 L4 40 L0 0 Z"
+        fill="#FFFFFF"
+        fill-opacity="0.45"
+      />
+
+      <!-- High-Intensity Center Crystal Spark Core -->
+      <circle cx="0" cy="0" r="5.5" fill="#FFFFFF" />
+      <circle cx="0" cy="0" r="2.8" fill="#DDD6FE" />
+
+      <!-- Top Vertex Specular Highlight Glint -->
+      <circle cx="0" cy="-50" r="3.5" fill="#FFFFFF" />
+      <!-- Left Vertex Glint -->
+      <circle cx="-36" cy="0" r="3" fill="#FFFFFF" />
+      <!-- Right Vertex Glint -->
+      <circle cx="36" cy="0" r="3" fill="#FFFFFF" />
+      <!-- Bottom Vertex Glint -->
+      <circle cx="0" cy="50" r="3" fill="#FFFFFF" />
+
+      <!-- Companion Secondary Mini Glass Sparkle (Top-Right) -->
+      <g transform="translate(34, -38)">
+        <path
+          d="M0 -15 C0 -7.5 3 -3.8 11 0 C3 3.8 0 7.5 0 15 C0 7.5 -3 3.8 -11 0 C-3 -3.8 0 -7.5 0 -15 Z"
+          fill="url(#zorliMiniStarGrad)"
+          stroke="#FFFFFF"
+          stroke-width="1.8"
+          stroke-linejoin="round"
+        />
+        <circle cx="0" cy="0" r="2.2" fill="#FFFFFF" />
+      </g>
+    </g>
+
+    <!-- ================= 3D SCULPTED GLASS WORDMARK "Zorli" ================= -->
+    <!-- Main Glass Text -->
+    <text
+      x="120"
+      y="160"
+      text-anchor="middle"
+      font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      font-weight="900"
+      font-size="44"
+      letter-spacing="-0.03em"
+      fill="url(#zorliTextGlass)"
+      stroke="#FFFFFF"
+      stroke-width="1.5"
+      stroke-opacity="0.95"
+    >
+      Zorli
+    </text>
+
+    <!-- Ambient Specular Glass Reflection Sheen Across Text -->
+    <path
+      d="M48 142 Q120 136 192 144 Q120 149 48 142 Z"
+      fill="#FFFFFF"
+      fill-opacity="0.55"
+    />
+  </g>
+</svg>

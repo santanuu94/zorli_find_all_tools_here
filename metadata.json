@@ -1,0 +1,6 @@
+{
+  "name": "Zorli — Simple Tools for a Smarter You",
+  "description": "Free, fast and easy-to-use online tools for everyday problems. Simple tools for a smarter you.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

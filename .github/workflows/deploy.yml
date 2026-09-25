@@ -21,13 +21,13 @@ jobs:
         with:
           node-version: 24
 
-      # Same install rule as CI: plain `npm install`, no `cache: npm` - see
-      # .github/workflows/ci.yml. The Windows-resolved Vite/Tailwind optional
-      # native subtrees trip both `npm ci`'s and the cache step's sync check on
-      # Linux ("Missing: @emnapi/core / @emnapi/runtime from lock file"), so
-      # `cache: npm` fails the job before install ever executes.
+      # Same install rule as CI: strict `npm ci` — see ci.yml. A regenerated
+      # package-lock.json (correct dev/optional flags on the wasm32-wasi
+      # @emnapi subtrees) fixed the "Missing: @emnapi/core / @emnapi/runtime
+      # from lock file" sync failure, so `cache: npm` stays off only to avoid
+      # re-introducing the check-before-install path.
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Build
         run: npm run build

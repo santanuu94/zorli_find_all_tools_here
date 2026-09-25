@@ -18,15 +18,16 @@ jobs:
         with:
           node-version: 24
 
-      # npm ci's strict package.json/lock sync check rejects the committed lockfile
-      # on Linux: it records Windows-resolved platform-specific optional native
-      # bindings (Vite rolldown + Tailwind oxide + their wasm32-wasi/@emnapi
-      # subtrees), e.g. "Missing: @emnapi/core / @emnapi/runtime from lock file".
-      # The setup-node `cache: npm` step performs that same sync check, so it is
-      # deliberately NOT enabled here - it fails before install ever executes.
-      # Plain `npm install` resolves for the runner's own platform instead.
+      # Root cause (Sep 2025): the lockfile committed from Windows recorded
+      # Windows-resolved platform-specific optional bindings but `npm ci` on the
+      # Pages Linux builder (and the setup-node cache step in CI) runs a strict
+      # package.json/lock sync check and failed on the wasm32-wasi subtrees:
+      # "Missing: @emnapi/core / @emnapi/runtime from lock file". Fixed by
+      # regenerating package-lock.json so the `@emnapi/wasi-threads 1.2.3` /
+      # `tslib 2.8.1` entries carry correct `dev`/`optional` flags; `npm ci`
+      # --dry-run now passes locally and every pipeline uses `npm ci` again.
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
 
       - name: Lint (type-check)
         run: npm run lint

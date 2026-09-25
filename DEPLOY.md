@@ -32,8 +32,40 @@ name, change it in .github/workflows/deploy.yml and wrangler.toml.
 
 How it works:
 - Push to main (or run the workflow manually).
-- The workflow runs `npm install`, then `npm run build`.
+- The workflow runs `npm ci`, then `npm run build`.
 - `wrangler pages deploy dist --project-name=zorli --branch=main` uploads ./dist.
+
+***Do NOT also connect this repo in the Cloudflare Pages dashboard.*** The
+`16:17 npm error ... aliases: clean-install ... Failed: error occurred while
+installing tools or dependencies` trace you are seeing comes from a Pages-side
+"Automatic deployment" that runs its own install (its log prints the `npm ci`
+help text) in parallel with this GitHub Actions deploy. Two builders racing on
+the same project means one of them fails for confusing reasons even when the
+lockfile is now `npm ci`-clean. Pick ONE path: keep this Actions workflow
+(recommended — full lint/test/build + error annotations) and set the dashboard
+project to **Settings → Builds & deployments → Automatic deployments: Disabled**
+(or disconnect the Git integration entirely). If you prefer the dashboard path
+instead, pause/delete `.github/workflows/deploy.yml` — but never run both.
+
+Install history (Sep 2025): an earlier `package-lock.json` committed from
+Windows failed strict `npm ci` sync on Linux ("Missing: @emnapi/core /
+@emnapi/runtime from lock file"). Fixed by regenerating the lockfile (correct
+`dev`/`optional` flags on `@emnapi/wasi-threads 1.2.3` + `tslib 2.8.1`);
+`npm ci --dry-run` + `npm run lint` both exit 0 locally, and both workflows
+are back on `npm ci`.
+
+Local build & test:
+- Install deps: `npm ci`
+- Type-check:   `npm run lint`
+- Tests:        `npm test`
+- Build:        `npm run build`   (output in ./dist)
+- Preview:      `npm run preview`
+
+Alternative: direct GitHub-to-Pages integration (no Actions). Link the repo in
+Cloudflare Pages and set build command `npm run build`, output directory `dist`.
+If you take that route, disable `.github/workflows/deploy.yml` first — running
+both deploy paths on the same project causes the `npm ci` help-text install
+failure above.
 
 Notes and troubleshooting:
 - Ensure the account id and API token belong to the Cloudflare account that owns

@@ -22,8 +22,11 @@ jobs:
           node-version: 24
           cache: npm
 
+      # See .github/workflows/ci.yml for why npm ci is not used: the lockfile records
+      # Windows-resolved platform-specific optional dependencies, which npm ci rejects on
+      # Linux and which blocked this step on every previous run.
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Build
         run: npm run build

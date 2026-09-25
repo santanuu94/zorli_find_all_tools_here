@@ -11,7 +11,19 @@ Zorli is a modern web utility platform offering browser-based tools for images, 
 - Icons: Lucide React
 - Animations: CSS keyframes (GPU compositor, `prefers-reduced-motion` aware)
 - State Management: React hooks (useState, useEffect)
-- Testing: Jest (configured but tests need setup Fix)
+- Testing: Jest 30 + ts-jest + Testing Library (jsdom), `npm test -- --runInBand`; routing tests `await` lazy chunks via `findByRole`/`waitFor`.
+
+## 🚀 Deployment (Cloudflare Pages via GitHub Actions)
+- Hosting: Cloudflare Pages project **`zorli`**, production branch **`main`**, output dir **`dist/`** (see `wrangler.toml`; `pages_build_output_dir = "dist"`). Public SPA contract: `public/_redirects` (`/* /index.html 200`) for deep links + refresh, `public/_headers` for caching/security, `public/robots.txt` + `public/sitemap.xml` assume default host `https://zorli.pages.dev` (update both if a custom domain is attached).
+- Workflows (both run on `ubuntu-latest`, Node 24):
+  - `.github/workflows/ci.yml` — `npm install --no-audit --no-fund` → `npm run lint` (`tsc --noEmit`) → `npm test` → `npm run build`. Uses `npm install` (not `npm ci`) because the committed lockfile records Windows-resolved platform-specific optional deps (Vite rolldown + Tailwind oxide native bindings), which `npm ci` rejects on Linux.
+  - `.github/workflows/deploy.yml` — `npm install` → `npm run build` → `npx wrangler@4 pages project create zorli --production-branch=main` (best-effort; expected to report "already exists" after first run) → `npx wrangler@4 pages deploy dist --project-name=zorli --branch=main`. Wrangler runs directly (not via `wrangler-action`) so the real error text lands in the job summary plus a `::error title=Cloudflare Pages deploy failed::` annotation (the action only reported "Action failed / npx failed with exit code 1", hiding the cause).
+- Secrets (GitHub repo → Settings → Secrets and variables → Actions; **never in code/logs/git**):
+  - `CLOUDFLARE_API_TOKEN` — custom token with exactly `Account | Cloudflare Pages | Edit` + `Account | Account Settings | Read`, scoped to the single account.
+  - `CLOUDFLARE_ACCOUNT_ID` — the account id.
+- Status: both secrets are now configured in GitHub. Next deploy runs automatically on push to `main` (or manually via Actions → "Deploy to Cloudflare Pages" → Run workflow); expected live URL `https://zorli.pages.dev`. Any token value previously pasted in chat must be treated as exposed and revoked/rotated in Cloudflare (My Profile → API Tokens → Delete).
+- Note: deployability depends only on build-green + valid secrets, not on UI choices — every perf change below keeps the same static `dist/` contract, so it only shrinks the upload, never breaks Pages.
+
 
 ## 🗂️ Directory Structure
 ```

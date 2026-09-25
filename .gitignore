@@ -1,8 +1,28 @@
+# Dependencies
 node_modules/
-build/
+
+# Build output
 dist/
+build/
+.next/
+server.js
+.wrangler/
+
+# Testing
 coverage/
-.DS_Store
-*.log
+
+# Environment files (keep the committed example)
 .env*
 !.env.example
+
+# Local tooling / editor
+.claude/
+.vscode/
+.idea/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

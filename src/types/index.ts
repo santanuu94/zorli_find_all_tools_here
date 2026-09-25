@@ -45,6 +45,8 @@ export interface ToolCategory {
   iconBg: string;
   iconColor: string;
   toolsCount?: number;
+  /** How many tools in this category are actually shipped (`status: 'available'`). */
+  availableToolsCount?: number;
   featured?: boolean;
   heroBadge?: string;
   heroDescription?: string;

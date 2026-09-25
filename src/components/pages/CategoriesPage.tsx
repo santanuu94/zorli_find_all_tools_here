@@ -58,11 +58,15 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({
                     >
                       <IconHelper name={cat.iconName} className="w-7 h-7" />
                     </div>
-                    {cat.toolsCount && (
-                      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
-                        {cat.toolsCount} utilities
+                    {cat.availableToolsCount ? (
+                      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                        {cat.availableToolsCount} live
                       </span>
-                    )}
+                    ) : cat.toolsCount ? (
+                      <span className="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">
+                        Coming soon
+                      </span>
+                    ) : null}
                   </div>
 
                   <h3 className="text-xl font-bold font-display text-slate-900 dark:text-white group-hover:text-[#6657FF] transition-colors mb-2">

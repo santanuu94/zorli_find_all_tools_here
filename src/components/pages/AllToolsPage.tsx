@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { Search } from 'lucide-react';
 import { Tool, ToolCategorySlug } from '../../types';
 import { TOOLS } from '../../data/tools';
 import { CATEGORIES } from '../../data/categories';
 import { Container } from '../ui/Container';
+import { EmptyState } from '../ui/EmptyState';
 import { ToolCard } from '../tools/ToolCard';
 import { ToolSearch } from '../tools/ToolSearch';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
@@ -98,20 +100,33 @@ export const AllToolsPage: React.FC<AllToolsPageProps> = ({
           <div className="flex items-center justify-between mb-6 text-sm text-slate-500 dark:text-slate-400">
             <span>
               Showing <strong className="text-slate-900 dark:text-white">{filteredTools.length}</strong>{' '}
-              utilities
+              {filteredTools.length === 1 ? 'tool' : 'tools'}
             </span>
           </div>
 
           {/* Tool Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filteredTools.map((tool) => (
-              <ToolCard
-                key={tool.slug}
-                tool={tool}
-                onClick={() => onSelectTool(tool)}
-              />
-            ))}
-          </div>
+          {filteredTools.length === 0 ? (
+            <EmptyState
+              icon={<Search className="w-7 h-7" />}
+              title="No tools match this filter yet"
+              description="Tools are still rolling out. Try another category or clear your search — new utilities land here as soon as they are finished."
+              actionText="Clear filters"
+              onAction={() => {
+                setSelectedCategory('all');
+                setSearchQuery('');
+              }}
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {filteredTools.map((tool) => (
+                <ToolCard
+                  key={tool.slug}
+                  tool={tool}
+                  onClick={() => onSelectTool(tool)}
+                />
+              ))}
+            </div>
+          )}
         </Container>
       </section>
     </div>

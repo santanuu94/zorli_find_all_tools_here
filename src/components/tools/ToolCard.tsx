@@ -26,16 +26,16 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, onClick, className = '
             <IconHelper name={tool.iconName} className="w-6 h-6" />
           </div>
 
-          {tool.popular && (
-            <Badge variant="popular" size="sm">
-              Popular
-            </Badge>
-          )}
-
-          {tool.status === 'coming-soon' && !tool.popular && (
+          {tool.status === 'coming-soon' && (
             <span className="text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400">
               Coming soon
             </span>
+          )}
+
+          {tool.status === 'available' && tool.popular && (
+            <Badge variant="popular" size="sm">
+              Popular
+            </Badge>
           )}
         </div>
 

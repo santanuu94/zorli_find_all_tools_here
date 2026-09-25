@@ -17,6 +17,7 @@ import { Tool, ToolCategory } from '../../types';
 import { getToolsByCategory } from '../../data/tools';
 import { Container } from '../ui/Container';
 import { Breadcrumbs } from '../ui/Breadcrumbs';
+import { EmptyState } from '../ui/EmptyState';
 import { ToolCard } from '../tools/ToolCard';
 import { ToolSearch } from '../tools/ToolSearch';
 import { Button } from '../ui/Button';
@@ -271,7 +272,9 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({
                 </span>
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Choose a tool below to get started. More tools coming soon!
+                {tools.length === 0
+                  ? 'No tools in this category yet. More tools coming soon!'
+                  : `${tools.length} ${tools.length === 1 ? 'tool' : 'tools'} catalogued — select one to preview it.`}
               </p>
             </div>
 
@@ -299,15 +302,27 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({
           </div>
 
           {/* Tools Grid (3 columns on desktop matching Screenshot 2) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filteredTools.map((tool) => (
-              <ToolCard
-                key={tool.slug}
-                tool={tool}
-                onClick={() => onSelectTool(tool)}
-              />
-            ))}
-          </div>
+          {filteredTools.length === 0 ? (
+            <EmptyState
+              title="Nothing matches this filter yet"
+              description="Tools in this category are still being built. Try the All Tools tab or clear your search — new utilities appear here once they are finished."
+              actionText="Clear filters"
+              onAction={() => {
+                setActiveFilter('all');
+                setSearchQuery('');
+              }}
+            />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {filteredTools.map((tool) => (
+                <ToolCard
+                  key={tool.slug}
+                  tool={tool}
+                  onClick={() => onSelectTool(tool)}
+                />
+              ))}
+            </div>
+          )}
         </Container>
       </section>
 

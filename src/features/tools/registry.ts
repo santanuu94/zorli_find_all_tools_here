@@ -1,46 +1,53 @@
 import { Tool } from '../../types';
 import { ToolModule } from './types';
-import { ACTIVE_IMAGE_TOOL_METADATA } from './image/registry';
+import { ACTIVE_IMAGE_TOOL_METADATA, COMING_SOON_IMAGE_TOOLS } from './image/registry';
 
 /**
- * Active tool metadata array for lookups and card grids
- * Only includes tools that are actually implemented and production-ready.
- * Other tools (coming-soon) remain architecturally available but are not shipped.
+ * Slugs of tools that are genuinely implemented, production-ready and exposed
+ * to users.
+ *
+ * Currently empty: the only fully-built tool in the codebase (Image Compressor)
+ * still has a stub processing engine, so it is catalogued as `coming-soon`
+ * instead. Nothing in the product may claim to be available while this is empty.
  */
-export const TOOLS: Tool[] = ACTIVE_IMAGE_TOOL_METADATA.map((slug) => {
-  // Look up metadata from image registry by slug
-  const metadata = {
-    slug,
-    name: slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-    description: `Image tool: ${slug}`,
-    category: 'images',
-    iconName: 'Image',
-    iconBg: 'bg-sky-500/10',
-    iconColor: '#38BDF8',
-    status: slug === 'image-compressor' ? 'available' : 'coming-soon',
-    filterType: 'optimize',
-    tags: ['image'],
-  };
-  return metadata as Tool;
-});
+export const ACTIVE_TOOL_SLUGS: string[] = ACTIVE_IMAGE_TOOL_METADATA;
 
 /**
- * Map of tool slug to a function that dynamically loads the tool module (component and metadata)
- * We use dynamic import to lazy-load the heavy component code.
+ * The tool catalogue rendered by the UI (cards, search, counts).
+ *
+ * `status` is *derived* from `ACTIVE_TOOL_SLUGS` rather than trusted from each
+ * tool's own metadata. That makes it impossible for the registry, the tool
+ * metadata and the UI badge to disagree — a tool is available here if and only
+ * if it is listed in the active registry.
+ *
+ * Entries may still be `coming-soon`: that is the honest way to show a roadmap,
+ * and such entries have no loader (see `TOOL_MODULE_LOADERS`), so opening one
+ * renders the "architecture ready / coming in a later phase" shell rather than a
+ * fake working tool.
  */
-const TOOL_MODULE_LOADERS: Record<string, () => Promise<ToolModule>> = {
-  'image-compressor': () => import('./image/image-compressor'),
-  'image-resizer': () => import('./image/image-resizer'),
-  'image-converter': () => import('./image/image-converter'),
-  'image-cropper': () => import('./image/image-cropper'),
-  'image-enhancer': () => import('./image/image-enhancer'),
-  'image-merger': () => import('./image/image-merger'),
-  'image-splitter': () => import('./image/image-splitter'),
-  'image-to-pdf': () => import('./image/image-to-pdf'),
-  'heic-to-jpg': () => import('./image/heic-to-jpg'),
-  'jpg-to-webp': () => import('./image/jpg-to-webp'),
-  'more-image-tools': () => import('./image/more-image-tools'),
-};
+export const TOOLS: Tool[] = COMING_SOON_IMAGE_TOOLS.map((tool) => ({
+  ...tool,
+  status: ACTIVE_TOOL_SLUGS.includes(tool.slug) ? 'available' : 'coming-soon',
+}));
+
+/**
+ * Map of tool slug to a function that dynamically loads the tool module
+ * (component + metadata).
+ *
+ * Intentionally empty until a tool ships with a real engine. Keeping it empty
+ * means the bundler emits no orphan tool chunks and no unimplemented code can
+ * ever be reached at runtime. To ship a tool, add exactly one entry here plus
+ * the slug in the family registry — see `src/features/tools/image/registry.ts`
+ * for the documented three-step wiring.
+ */
+const TOOL_MODULE_LOADERS: Record<string, () => Promise<ToolModule>> = {};
+
+/**
+ * True when the tool is genuinely shipped and may be presented as available.
+ */
+export function isToolActive(slug: string): boolean {
+  return ACTIVE_TOOL_SLUGS.includes(slug);
+}
 
 /**
  * Helper to get a tool's metadata by its slug

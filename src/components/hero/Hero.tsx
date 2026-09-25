@@ -57,7 +57,7 @@ export const Hero: React.FC<HeroProps> = ({ onSelectTool }) => {
             {/* Hero Search Bar */}
             <div className="w-full max-w-lg mb-7 shadow-xl shadow-indigo-950/10 dark:shadow-2xl dark:shadow-[#6657FF]/10 rounded-2xl">
               <ToolSearch
-                placeholder="Search tools (e.g. compress image, merge PDF, JSON formatter...)"
+                placeholder="Search tools (e.g. compress image, convert format...)"
                 onSelectTool={onSelectTool}
               />
             </div>

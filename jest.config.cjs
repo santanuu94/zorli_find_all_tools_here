@@ -19,7 +19,11 @@ const config = {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
       {
-        tsconfig: 'tsconfig.json',
+        // Test-only tsconfig. It extends the app config and enables
+        // esModuleInterop so `import React from 'react'` yields the React
+        // object at runtime (otherwise React is undefined under isolatedModules
+        // and any component using `React.Fragment`/`React.FC` crashes in jsdom).
+        tsconfig: 'tsconfig.test.json',
         isolatedModules: true,
       },
     ],

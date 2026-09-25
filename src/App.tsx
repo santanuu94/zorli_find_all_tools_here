@@ -25,7 +25,18 @@ import { TOOLS, getToolBySlug } from './data/tools';
 import { Tool } from './types';
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState<string>('/');
+  // Seed the router from the real URL so deep links, refreshes and shared links
+  // land on the right page. Cloudflare Pages serves index.html for any path
+  // (see public/_redirects), so the pathname is the single source of truth.
+  const readPathname = (): string => {
+    if (typeof window === 'undefined') return '/';
+    const { pathname } = window.location;
+    if (!pathname || pathname === '/') return '/';
+    // Treat /tools/ and /tools as the same route.
+    return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+  };
+
+  const [currentPath, setCurrentPath] = useState<string>(readPathname);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isDarkTheme, setIsDarkTheme] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
@@ -46,8 +57,47 @@ export default function App() {
     }
   }, [isDarkTheme]);
 
+  // Keep the document title in step with the client-side route, so browser
+  // history, bookmarks and shared links are meaningful. The app has no SSR or
+  // meta-framework, so this is the only place titles can be set.
+  useEffect(() => {
+    const base = 'Zorli — Simple Tools for a Smarter You';
+    let title = base;
+
+    if (currentPath === '/tools') {
+      title = 'All Tools — Zorli';
+    } else if (currentPath === '/categories') {
+      title = 'Categories — Zorli';
+    } else if (currentPath.startsWith('/categories/')) {
+      const category = CATEGORIES.find((c) => c.slug === currentPath.replace('/categories/', ''));
+      if (category) title = `${category.name} — Zorli`;
+    } else if (currentPath.startsWith('/tools/')) {
+      const parts = currentPath.replace('/tools/', '').split('/').filter(Boolean);
+      const tool = getToolBySlug(parts.length > 1 ? parts[1] : parts[0]);
+      if (tool) {
+        title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
+      }
+    } else if (currentPath !== '/') {
+      title = `${currentPath.replace('/', '').replace(/^\w/, (c) => c.toUpperCase())} — Zorli`;
+    }
+
+    document.title = title;
+  }, [currentPath]);
+
+  // Support browser back/forward.
+  useEffect(() => {
+    const handlePopState = () => setCurrentPath(readPathname());
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+    // readPathname is a pure function of window.location, safe to omit here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Scroll to top whenever route changes
   const handleNavigate = (path: string) => {
+    if (typeof window !== 'undefined' && window.location.pathname !== path) {
+      window.history.pushState({}, '', path);
+    }
     setCurrentPath(path);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };

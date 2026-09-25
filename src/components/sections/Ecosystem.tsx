@@ -4,24 +4,26 @@ import { Container } from '../ui/Container';
 import { ZorliSparkle } from '../brand/ZorliSparkle';
 
 export const Ecosystem: React.FC = () => {
+  // Metrics must stay verifiable. Do not publish user counts, uptime
+  // percentages or tool totals that cannot be backed by the shipped build.
   const metrics = [
     {
       icon: <RefreshCw className="w-6 h-6 text-[#6657FF]" />,
       iconBg: 'bg-[#6657FF]/10 border-[#6657FF]/20',
-      value: '100+',
-      label: 'Tools (and growing)',
+      value: 'Rolling out',
+      label: 'Tools shipping soon',
     },
     {
       icon: <Globe className="w-6 h-6 text-sky-500" />,
       iconBg: 'bg-sky-500/10 border-sky-500/20',
-      value: '1M+',
-      label: 'Happy Users',
+      value: '100%',
+      label: 'Runs in your browser',
     },
     {
       icon: <Star className="w-6 h-6 text-amber-500" />,
       iconBg: 'bg-amber-500/10 border-amber-500/20',
-      value: '99.9%',
-      label: 'Uptime',
+      value: 'No cost',
+      label: 'No sign-up required',
     },
     {
       icon: <Heart className="w-6 h-6 text-rose-500" />,

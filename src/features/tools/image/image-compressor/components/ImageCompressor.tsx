@@ -8,6 +8,18 @@ import { CompressionResult } from './CompressionResult';
 import { DownloadButton } from './DownloadButton';
 import { Trash2 } from 'lucide-react';
 
+/**
+ * Image Compressor UI shell.
+ *
+ * NOT SHIPPED. This component is deliberately not registered in
+ * `src/features/tools/registry.ts` and has no dynamic loader, so it is never
+ * bundled or rendered. The engine in `../lib/compressor.ts` throws, and the
+ * download button has no handler — both are intentional, so that the tool cannot
+ * pretend to compress anything.
+ *
+ * Register this tool only after `compressImage` performs a real re-encode;
+ * see `../README.md` for the engine contract.
+ */
 export const ImageCompressor: React.FC<ToolComponentProps> = () => {
   const {
     settings,

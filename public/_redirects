@@ -1,6 +1,6 @@
 # Cloudflare Pages — SPA fallback.
 # Zorli uses client-side routing, so any path that is not a real file
-# (e.g. /tools/text/word-counter opened directly or after a refresh)
-# is served index.html and rendered by the React app.
+# (e.g. /categories/images or /tools/image/image-compressor opened directly or
+# after a refresh) is served index.html and rendered by the React app.
 # Existing static assets are served normally before this rule applies.
 /* /index.html 200

@@ -31,6 +31,10 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   const results = query.trim() ? searchTools(query) : TOOLS.filter((t) => t.popular || t.featured).slice(0, 8);
 
+  // Suggestion pills are derived from the catalogue so the modal can never
+  // advertise a tool the app does not have.
+  const suggestions = TOOLS.filter((t) => t.popular || t.featured).slice(0, 4).map((t) => t.name);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-24 px-4 bg-black/60 dark:bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
@@ -70,7 +74,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         {/* Quick Suggestion Pills */}
         <div className="px-4 py-2 bg-slate-50 dark:bg-white/5 border-b border-slate-200/80 dark:border-white/5 flex items-center gap-2 overflow-x-auto text-xs text-slate-500 dark:text-slate-400">
           <span className="shrink-0 text-slate-400">Popular:</span>
-          {['Image Compressor', 'PDF Merger', 'JSON Formatter', 'Word Counter'].map((suggest) => (
+          {suggestions.map((suggest) => (
             <button
               key={suggest}
               onClick={() => setQuery(suggest)}
@@ -92,7 +96,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               <Sparkles className="w-8 h-8 text-[#6657FF] dark:text-[#8B5CF6] mx-auto mb-2 opacity-60" />
               <p className="text-base text-slate-700 dark:text-slate-300 font-medium">No tools found</p>
               <p className="text-xs text-slate-500 mt-1">
-                Try searching for image, pdf, json, or converters.
+                Tools are still rolling out — more searchable tools are on the way.
               </p>
             </div>
           ) : (
@@ -117,9 +121,14 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                       <span className="text-sm md:text-base font-semibold text-slate-900 dark:text-white group-hover:text-[#6657FF] transition-colors">
                         {tool.name}
                       </span>
-                      {tool.popular && (
+                      {tool.status === 'available' && tool.popular && (
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-[#6657FF] to-[#8B5CF6] text-white font-medium">
                           Popular
+                        </span>
+                      )}
+                      {tool.status === 'coming-soon' && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 font-medium">
+                          Coming soon
                         </span>
                       )}
                       <span className="text-[10px] uppercase tracking-wider text-slate-500 border border-slate-200 dark:border-white/10 px-1.5 py-0.5 rounded">

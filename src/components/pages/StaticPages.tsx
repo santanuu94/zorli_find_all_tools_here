@@ -259,7 +259,10 @@ export const PrivacyPage: React.FC<StaticPageProps> = ({ onNavigateHome }) => (
             2. File Handling
           </h2>
           <p>
-            When utilizing utilities on Zorli, client-side tools execute locally using modern WebAssembly and Canvas APIs. Files remain in your device memory during processing and are discarded upon tab closure.
+            Zorli has no server-side component. The site is delivered as static files and runs
+            entirely in your browser, and it issues no network requests while you browse — so there
+            is no backend that could receive or store a file. When a tool processes something, it
+            reads it locally in memory on your device and the data is gone when you close the tab.
           </p>
         </div>
       </Container>

@@ -1,27 +1,51 @@
 Deploying to Cloudflare Pages
 
 This repository contains a Vite-built static site (build output: ./dist).
-The repository includes a GitHub Actions workflow that builds the project and deploys to Cloudflare Pages when commits are pushed to main or master.
+A GitHub Actions workflow builds the project and deploys it to Cloudflare Pages
+on every push to main (or manually via "Run workflow").
 
-What to set in GitHub:
-- Go to the repository Settings -> Secrets and variables -> Actions -> "New repository secret" and add:
-  - CF_API_TOKEN: A Cloudflare API token with Pages deployment permissions (or full account if needed)  
-  - CF_ACCOUNT_ID: Your Cloudflare account id  
-  - CF_PROJECT_NAME: The Cloudflare Pages project name (the Pages site slug)
+Files that matter:
+- .github/workflows/deploy.yml  — the deploy pipeline (cloudflare/wrangler-action@v3)
+- .github/workflows/ci.yml      — runs lint, test and build on every push/PR
+- wrangler.toml                 — Cloudflare Pages project config (name = "zorli")
+- public/_redirects             — SPA fallback (/* -> /index.html 200)
+- public/_headers               — security + caching headers
+- public/robots.txt             — crawl rules
+- public/sitemap.xml            — sitemap (uses the zorli.pages.dev host)
+
+Required GitHub repository secrets
+(Settings -> Secrets and variables -> Actions -> "New repository secret"):
+
+| Secret                  | Value                                                            |
+| ----------------------- | ---------------------------------------------------------------- |
+| CLOUDFLARE_API_TOKEN    | API token with the "Cloudflare Pages — Edit" permission           |
+| CLOUDFLARE_ACCOUNT_ID   | Your Cloudflare account id (dashboard right sidebar)              |
+
+The Pages project name is passed to the workflow as `--project-name=zorli`
+(it is created automatically on the first deploy). To use a different project
+name, change it in .github/workflows/deploy.yml and wrangler.toml.
 
 How it works:
-- The workflow (.github/workflows/deploy-pages.yml) runs on push to main/master.
-- It runs `npm ci` then `npm run build`.
-- The built static files in ./dist are uploaded to Cloudflare Pages using cloudflare/pages-action.
+- Push to main (or run the workflow manually).
+- The workflow runs `npm ci`, then `npm run build`.
+- `wrangler pages deploy dist --project-name=zorli --branch=main` uploads ./dist.
 
 Notes and troubleshooting:
-- Ensure the projectName and accountId correspond to the Pages project in the Cloudflare dashboard.
-- If the site uses environment variables at build time, add them as repository secrets and use them in the workflow by setting environment variables in the build step.
-- If Cloudflare Pages expects a different build directory, update the `directory` value in the workflow.
+- Ensure the account id and API token belong to the Cloudflare account that owns
+  the Pages project.
+- If the Pages project expects a different output directory, update
+  pages_build_output_dir in wrangler.toml and the `dist` argument in the workflow.
+- Prefer a scoped API token (Pages: Edit) over a Global API key.
+- Custom domain: add it in the Cloudflare dashboard, then update the host in
+  public/sitemap.xml and the Sitemap line in public/robots.txt.
 
 Local build & test:
 - Install deps: `npm ci`
-- Build: `npm run build` (output in ./dist)
-- Preview (optional): `npm run preview` (depends on project setup)
+- Type-check:   `npm run lint`
+- Tests:        `npm test`
+- Build:        `npm run build`   (output in ./dist)
+- Preview:      `npm run preview`
 
-If you'd prefer direct GitHub-to-Pages integration (no Actions), link the repo in Cloudflare Pages and set build settings there (build command: `npm run build`, build directory: `dist`).
+Alternative: direct GitHub-to-Pages integration (no Actions). Link the repo in
+Cloudflare Pages and set build command `npm run build`, output directory `dist`.
+

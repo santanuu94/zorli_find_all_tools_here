@@ -4,7 +4,33 @@
 
 Free, fast and easy-to-use online tools for everyday problems. No sign-up. No hassle. Just results.
 
-Zorli is a modern, browser-based utility platform built with **React 19**, **TypeScript**, **Vite 8**, and **Tailwind CSS 4**. Tools are organized by family (image, PDF, developer, text, calculator, converter, social, SEO, productivity, privacy, and more) and run **100% in the client's browser** — no backend or API keys required.
+Zorli is a modern, browser-based utility platform built with **React 19**, **TypeScript**, **Vite 8**, and **Tailwind CSS 4**. Tools are organized by family (image, PDF, developer, text, calculator, converter, social, SEO, productivity, privacy, and more) and run **100% in the client's browser** — no backend, no API keys, and no network requests at runtime.
+
+## 📦 Project Status (read this first)
+
+Zorli is being built incrementally and **no tool is live yet**. The architecture,
+routing, registry, search, and design system are production-ready, but tool
+engines are still being implemented.
+
+- **Active family:** image.
+- **Active (shipped) tools:** none yet. `src/features/tools/registry.ts`
+  exposes an empty active registry, so nothing in the UI can claim to be
+  available.
+- **Catalogued as `coming-soon`:** Image Compressor. Its UI exists, but
+  `lib/compressor.ts` has no real engine, so it is deliberately not registered,
+  not loaded, and not presented as working.
+- **Registered families not yet wired into the shipping registry:** calculator,
+  developer, text, pdf, social (source exists, nothing is exposed).
+
+Rules that keep this honest:
+
+1. A tool is `available` **only** if it is listed in the active registry *and*
+   has a real implementation.
+2. Unfinished tools are catalogued as `coming-soon` and must have **no** dynamic
+   loader, so no orphan chunk is bundled.
+3. Never hardcode tool or category counts — derive them from the registry
+   (`src/data/categories.ts`).
+
 
 ## ✨ Tech Stack
 
@@ -74,9 +100,12 @@ kept in [`.env.example`](.env.example).
 The repository is pre-configured for Cloudflare Pages:
 
 - [`public/_redirects`](public/_redirects) — SPA fallback (`/* /index.html 200`)
-  so client-side routes like `/tools/text/word-counter` work on refresh and
-  direct links.
+  so client-side routes like `/categories/images` or
+  `/tools/image/image-compressor` work on refresh and direct links.
 - [`public/_headers`](public/_headers) — security and caching headers.
+- [`public/robots.txt`](public/robots.txt) and
+  [`public/sitemap.xml`](public/sitemap.xml) — crawl rules and sitemap
+  (update the host if you attach a custom domain).
 - `.github/workflows/ci.yml` — runs `lint`, `test`, and `build` on every push/PR.
 - `.github/workflows/deploy.yml` — auto-deploys `main` to Cloudflare Pages.
 

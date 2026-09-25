@@ -92,8 +92,12 @@ export { SvgOptimizer, SvgOptimizer as Component } from './components/SvgOptimiz
 
 ---
 
-### Step 8: Register in Family Registry
-Add your tool module into `src/features/tools/[family]/registry.ts`:
+### Step 8: Register the tool (three places, all required)
+
+Registration is explicit — adding the module to a family registry on its own does
+**not** make a tool live.
+
+**8a. Family registry** — `src/features/tools/[family]/registry.ts`:
 ```typescript
 import * as SvgOptimizer from './svg-optimizer';
 
@@ -103,12 +107,40 @@ export const IMAGE_TOOL_MODULES: ToolModule[] = [
 ];
 ```
 
+**8b. Mark it active** — same file. This is the single source of truth for what
+is "live":
+```typescript
+export const ACTIVE_IMAGE_TOOL_SLUGS: string[] = [
+  'svg-optimizer',
+];
+```
+`ACTIVE_IMAGE_TOOL_METADATA` is derived from this list, so the catalogue's
+`status` follows automatically. Set `status: 'available'` in the tool's own
+`config.ts` so the source of truth agrees.
+
+**8c. Add exactly one lazy loader** — `src/features/tools/registry.ts`:
+```typescript
+const TOOL_MODULE_LOADERS: Record<string, () => Promise<ToolModule>> = {
+  'svg-optimizer': () => import('./image/svg-optimizer'),
+};
+```
+Without this the tool page renders the "not available yet" shell, because the
+registry refuses to present a tool it cannot actually load.
+
+> Tools that are not finished must stay **out** of `ACTIVE_IMAGE_TOOL_SLUGS` and
+> must have **no** loader. They may still be listed in
+> `COMING_SOON_IMAGE_TOOLS` so the roadmap is visible; they will render as
+> `coming-soon` and be excluded from search-driven "available" claims. This keeps
+> the bundle free of orphan chunks and stops the UI from over-promising.
+
 ---
 
-### Step 9: Automatic Route Resolution
-The router automatically resolves the new tool at:
-`/tools/image/svg-optimizer` and `/tools/svg-optimizer`.
-Search, category listings, and related tools automatically discover the new tool through the master registry.
+### Step 9: Route resolution
+
+Once the three registrations above are in place the router resolves the tool at
+`/tools/image/svg-optimizer` and `/tools/svg-optimizer`, and search, category
+listings and related tools pick it up from the master registry. If any of the
+three steps is missing, the route falls through to the 404 page by design.
 
 ---
 
@@ -116,6 +148,9 @@ Search, category listings, and related tools automatically discover the new tool
 Run verification commands:
 ```bash
 npm run lint
+npm test
 npm run build
 ```
+Then inspect `dist/` to confirm your tool produced exactly one lazy chunk (and
+that no chunk was produced for tools you did not activate).
 Verify the tool opens seamlessly and renders with responsive layout and dark mode support.

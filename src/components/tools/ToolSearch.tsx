@@ -13,7 +13,7 @@ interface ToolSearchProps {
 }
 
 export const ToolSearch: React.FC<ToolSearchProps> = ({
-  placeholder = 'Search for a tool (e.g. compress image, merge PDF...)',
+  placeholder = 'Search for a tool (e.g. compress image, convert format...)',
   categoryFilter,
   onSelectTool,
   className = '',
@@ -108,7 +108,7 @@ export const ToolSearch: React.FC<ToolSearchProps> = ({
                   We couldn't find a tool matching "{query}".
                 </p>
                 <p className="text-xs text-slate-400">
-                  Try terms like "compress", "pdf", "json", "word count"
+                  Tools are still rolling out — try a term like "compress" or "image".
                 </p>
               </div>
             ) : (
@@ -131,9 +131,14 @@ export const ToolSearch: React.FC<ToolSearchProps> = ({
                           <span className="text-sm font-semibold text-slate-900 dark:text-white group-hover:text-[#6657FF] transition-colors">
                             {tool.name}
                           </span>
-                          {tool.popular && (
+                          {tool.status === 'available' && tool.popular && (
                             <span className="text-[10px] px-1.5 py-0.2 bg-[#6657FF]/15 text-[#8B5CF6] rounded font-medium">
                               Popular
+                            </span>
+                          )}
+                          {tool.status === 'coming-soon' && (
+                            <span className="text-[10px] px-1.5 py-0.2 bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400 rounded font-medium">
+                              Coming soon
                             </span>
                           )}
                         </div>

@@ -93,7 +93,12 @@ export const ToolPageShell: React.FC<ToolPageShellProps> = ({
             </div>
 
             <div className="flex items-center gap-2 self-start md:self-center">
-              {tool.popular && (
+              {tool.status === 'coming-soon' && (
+                <span className="text-xs font-semibold px-3 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/25">
+                  Coming soon
+                </span>
+              )}
+              {tool.status === 'available' && tool.popular && (
                 <Badge variant="popular" size="md">
                   Most Popular
                 </Badge>
@@ -138,10 +143,11 @@ export const ToolPageShell: React.FC<ToolPageShellProps> = ({
                   <Upload className="w-8 h-8" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold font-display text-slate-900 dark:text-white mb-2">
-                  Drop your files here to start with {tool.name}
+                  {tool.name} is not available yet
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md mb-6">
-                  Supports batch processing. Files are processed client-side with zero telemetry or data leaks.
+                  The processing engine for this tool has not been built, so it is deliberately
+                  locked. Nothing is uploaded, read or processed while it is in this state.
                 </p>
                 <button
                   disabled
@@ -164,7 +170,7 @@ export const ToolPageShell: React.FC<ToolPageShellProps> = ({
               Step-by-step
             </span>
             <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900 dark:text-white tracking-tight">
-              How {tool.name} Works
+              {tool.status === 'coming-soon' ? `How ${tool.name} will work` : `How ${tool.name} Works`}
             </h2>
           </div>
 
@@ -216,7 +222,9 @@ export const ToolPageShell: React.FC<ToolPageShellProps> = ({
                 Features & Benefits
               </span>
               <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900 dark:text-white tracking-tight mb-5">
-                Why use Zorli for {tool.name}?
+                {tool.status === 'coming-soon'
+                  ? `What's planned for ${tool.name}`
+                  : `Why use Zorli for ${tool.name}?`}
               </h2>
               <div className="space-y-3.5">
                 {(

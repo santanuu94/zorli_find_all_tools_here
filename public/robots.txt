@@ -1,0 +1,13 @@
+# Zorli — robots.txt
+# Deployed as a static file from `public/`.
+
+User-agent: *
+Allow: /
+
+# Tool pages that are catalogued as "coming soon" are deliberately excluded so
+# search engines do not index an empty preview page. Remove the matching line
+# when the tool actually ships (see src/features/tools/image/registry.ts).
+Disallow: /tools/image/image-compressor
+
+# Sitemap (absolute URL required). Update the host if a custom domain is added.
+Sitemap: https://zorli.pages.dev/sitemap.xml

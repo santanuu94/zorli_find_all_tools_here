@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { ZorliSparkle } from '../brand/ZorliSparkle';
 
 export const HeroBackground: React.FC = () => {
@@ -29,91 +28,45 @@ export const HeroBackground: React.FC = () => {
         <ZorliSparkle size={180} glow={false} variant="primary" />
       </div>
 
-      {/* 5. Animated Floating Zorli Sparkle Stars */}
+      {/* 5. Animated Floating Zorli Sparkle Stars (CSS-only: GPU compositor, no JS) */}
       {/* Top Left Sparkle */}
-      <motion.div
-        animate={{
-          y: [-10, 10, -10],
-          rotate: [-4, 4, -4],
-          scale: [1, 1.08, 1],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute top-20 left-[10%] opacity-70 dark:opacity-80"
+      <div
+        className="absolute top-20 left-[10%] opacity-70 dark:opacity-80 anim-drift"
       >
         <ZorliSparkle size={32} variant="cyan" />
-      </motion.div>
+      </div>
 
       {/* Mid Left Accent Sparkle */}
-      <motion.div
-        animate={{
-          y: [8, -8, 8],
-          opacity: [0.35, 0.75, 0.35],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1,
-        }}
-        className="absolute top-1/2 left-[4%] hidden sm:block"
+      <div
+        className="absolute top-1/2 left-[4%] hidden sm:block anim-pulse-soft"
+        style={{ animationDelay: '1s' }}
       >
         <ZorliSparkle size={26} variant="secondary" />
-      </motion.div>
+      </div>
 
       {/* Top Right Sparkle */}
-      <motion.div
-        animate={{
-          y: [-12, 12, -12],
-          scale: [0.95, 1.1, 0.95],
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 0.5,
-        }}
-        className="absolute top-24 right-[18%] opacity-80 dark:opacity-90 hidden md:block"
+      <div
+        className="absolute top-24 right-[18%] opacity-80 dark:opacity-90 hidden md:block anim-float-y"
+        style={{ animationDuration: '7s', animationDelay: '0.5s' }}
       >
         <ZorliSparkle size={44} variant="primary" />
-      </motion.div>
+      </div>
 
       {/* Center-Top Ambient Sparkle */}
-      <motion.div
-        animate={{
-          opacity: [0.25, 0.65, 0.25],
-          scale: [0.9, 1.05, 0.9],
-        }}
-        transition={{
-          duration: 4.5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 2,
-        }}
-        className="absolute top-8 left-[48%] opacity-50 dark:opacity-60"
+      <div
+        className="absolute top-8 left-[48%] opacity-50 dark:opacity-60 anim-pulse-soft"
+        style={{ animationDuration: '4.5s', animationDelay: '2s' }}
       >
         <ZorliSparkle size={22} variant="secondary" />
-      </motion.div>
+      </div>
 
       {/* Bottom Right Drifting Sparkle */}
-      <motion.div
-        animate={{
-          y: [10, -10, 10],
-          rotate: [6, -6, 6],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1.5,
-        }}
-        className="absolute bottom-20 right-[8%] opacity-65 dark:opacity-75"
+      <div
+        className="absolute bottom-20 right-[8%] opacity-65 dark:opacity-75 anim-float-xy"
+        style={{ animationDuration: '8s', animationDelay: '1.5s' }}
       >
         <ZorliSparkle size={36} variant="cyan" />
-      </motion.div>
+      </div>
     </div>
   );
 };

@@ -34,11 +34,20 @@ export const TOOLS: Tool[] = COMING_SOON_IMAGE_TOOLS.map((tool) => ({
  * Map of tool slug to a function that dynamically loads the tool module
  * (component + metadata).
  *
- * Intentionally empty until a tool ships with a real engine. Keeping it empty
- * means the bundler emits no orphan tool chunks and no unimplemented code can
- * ever be reached at runtime. To ship a tool, add exactly one entry here plus
- * the slug in the family registry — see `src/features/tools/image/registry.ts`
- * for the documented three-step wiring.
+ * SCALING CONTRACT — read before adding new tool families:
+ * 1. Add exactly one lazy loader per family, e.g.
+ *    'pdf-compress': () => import('./pdf/CompressTool').then(m => ({...}))
+ *    Vite turns each dynamic import into its own chunk, so a new family adds
+ *    ~0 bytes to the home page and loads only when its tool page opens.
+ * 2. NEVER `import { XTool } from './pdf/...'` statically at the top of this
+ *    file or of any route loaded by the home page — that would pull the whole
+ *    family into the initial bundle for every visitor.
+ * 3. Keep catalogue metadata (TOOLS below) JSON-light: names, slugs, tags.
+ *    Heavy engines/parsers live inside the lazy chunk, never in metadata.
+ *
+ * Intentionally minimal until a tool ships with a real engine. To ship a tool,
+ * add exactly one entry here plus the slug in the family registry — see
+ * `src/features/tools/image/registry.ts` for the documented three-step wiring.
  */
 const TOOL_MODULE_LOADERS: Record<string, () => Promise<ToolModule>> = {};
 

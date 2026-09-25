@@ -37,7 +37,7 @@ export const WhyZorli: React.FC<WhyZorliProps> = ({ onExploreTools }) => {
   ];
 
   return (
-    <section className="relative py-20 md:py-28 bg-[#F7F8FC] dark:bg-[#070B24] transition-colors overflow-hidden">
+    <section className="cv-auto relative py-20 md:py-28 bg-[#F7F8FC] dark:bg-[#070B24] transition-colors overflow-hidden">
       {/* Background Subtle Sparkle Asset */}
       <div className="absolute -top-16 -left-16 opacity-[0.04] dark:opacity-[0.06] pointer-events-none -z-0">
         <ZorliSparkle size={240} glow={false} variant="secondary" />

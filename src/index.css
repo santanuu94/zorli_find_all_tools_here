@@ -53,6 +53,93 @@
   box-shadow: 0 0 30px -5px rgba(53, 217, 232, 0.3);
 }
 
+/* ============================================================
+   Zorli motion system — CSS-only (replaces framer-motion/motion).
+   Why: the 4 former `motion/react` usages were simple infinite
+   float/spin/fade loops. CSS keyframes render them on the compositor
+   (GPU, transform/opacity only) with zero JS cost, zero bundle cost,
+   and automatic `prefers-reduced-motion` support. Same visuals.
+   Future tools: reuse these utilities instead of adding an
+   animation library — keeps every new family code-split and light.
+   ============================================================ */
+
+@keyframes zorli-float-y {
+  0%, 100% { transform: translate3d(0, -8px, 0); }
+  50% { transform: translate3d(0, 8px, 0); }
+}
+
+@keyframes zorli-float-xy {
+  0%, 100% { transform: translate3d(-3px, -8px, 0) rotate(-4deg); }
+  50% { transform: translate3d(3px, 8px, 0) rotate(3deg); }
+}
+
+@keyframes zorli-drift {
+  0%, 100% { transform: translate3d(0, -10px, 0) rotate(-4deg) scale(1); }
+  50% { transform: translate3d(0, 10px, 0) rotate(4deg) scale(1.08); }
+}
+
+@keyframes zorli-pulse-soft {
+  0%, 100% { opacity: 0.35; transform: scale(0.95); }
+  50% { opacity: 0.75; transform: scale(1.05); }
+}
+
+@keyframes zorli-fade-scale-in {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes zorli-spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes zorli-spin-slow-reverse {
+  to { transform: rotate(-360deg); }
+}
+
+/* Utility classes — compositor-friendly, GPU-hinted */
+.anim-float-y { animation: zorli-float-y 5.2s ease-in-out infinite; will-change: transform; }
+.anim-float-xy { animation: zorli-float-xy 5.2s ease-in-out infinite; will-change: transform; }
+.anim-drift { animation: zorli-drift 6s ease-in-out infinite; will-change: transform; }
+.anim-pulse-soft { animation: zorli-pulse-soft 5s ease-in-out infinite; will-change: opacity, transform; }
+.anim-fade-scale-in { animation: zorli-fade-scale-in 0.6s ease-out both; }
+.anim-spin-slower { animation: zorli-spin-slow 60s linear infinite; will-change: transform; }
+.anim-spin-slower-reverse { animation: zorli-spin-slow-reverse 45s linear infinite; will-change: transform; }
+.anim-orbit { animation: zorli-spin-slow 30s linear infinite; will-change: transform; }
+
+/* Below-the-fold sections: let the browser skip off-screen rendering.
+   Applied per-section (not globally) so above-fold LCP is unaffected. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+/* Small screens / low-power devices: shrink the most expensive blurs.
+   Desktop keeps the full glow; mobile gets the same look, cheaper. */
+@media (max-width: 640px) {
+  .blur-\[120px\] { filter: blur(60px); }
+  .blur-\[130px\] { filter: blur(60px); }
+  .blur-\[140px\] { filter: blur(70px); }
+}
+
+/* Accessibility + battery: honour OS reduced-motion across all browsers. */
+@media (prefers-reduced-motion: reduce) {
+  .anim-float-y,
+  .anim-float-xy,
+  .anim-drift,
+  .anim-pulse-soft,
+  .anim-spin-slower,
+  .anim-spin-slower-reverse,
+  .anim-orbit,
+  .animate-\[spin_60s_linear_infinite\],
+  .animate-\[spin_45s_linear_infinite_reverse\],
+  .animate-pulse,
+  .animate-ping {
+    animation: none !important;
+  }
+  .anim-fade-scale-in { animation-duration: 0.01ms !important; }
+  html { scroll-behavior: auto !important; }
+}
+
 /* Smooth scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

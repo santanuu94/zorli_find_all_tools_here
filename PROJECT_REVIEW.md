@@ -9,7 +9,7 @@ Zorli is a modern web utility platform offering browser-based tools for images, 
 - Build Tool: Vite 8.3.0
 - Styling: Tailwind CSS 4.3.3
 - Icons: Lucide React
-- Animations: Motion
+- Animations: CSS keyframes (GPU compositor, `prefers-reduced-motion` aware)
 - State Management: React hooks (useState, useEffect)
 - Testing: Jest (configured but tests need setup Fix)
 

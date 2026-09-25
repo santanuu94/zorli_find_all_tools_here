@@ -1,25 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Navbar } from './components/navigation/Navbar';
 import { MobileBottomBar } from './components/navigation/MobileBottomBar';
 import { Footer } from './components/footer/Footer';
-import { SearchModal } from './components/tools/SearchModal';
 import { Hero } from './components/hero/Hero';
 import { CategoryPreview } from './components/sections/CategoryPreview';
 import { WhyZorli } from './components/sections/WhyZorli';
 import { Ecosystem } from './components/sections/Ecosystem';
 import { CTASection } from './components/sections/CTASection';
-import { CategoryPage } from './components/pages/CategoryPage';
-import { ToolPageShell } from './components/pages/ToolPageShell';
-import { AllToolsPage } from './components/pages/AllToolsPage';
-import { CategoriesPage } from './components/pages/CategoriesPage';
-import {
-  AboutPage,
-  BlogPage,
-  ContactPage,
-  PrivacyPage,
-  TermsPage,
-  NotFoundPage,
-} from './components/pages/StaticPages';
+// Route-level code splitting: below-the-fold / non-home routes load on demand.
+// Home (Hero + sections) stays in the initial bundle for fast LCP; every other
+// route — and the search palette — is a separate chunk. Future tool families
+// MUST follow this pattern: keep the home bundle lean, lazy-load the family
+// components via src/features/tools registry loaders (see registry.ts).
+const SearchModal = lazy(() =>
+  import('./components/tools/SearchModal').then((m) => ({ default: m.SearchModal })),
+);
+const CategoryPage = lazy(() =>
+  import('./components/pages/CategoryPage').then((m) => ({ default: m.CategoryPage })),
+);
+const ToolPageShell = lazy(() =>
+  import('./components/pages/ToolPageShell').then((m) => ({ default: m.ToolPageShell })),
+);
+const AllToolsPage = lazy(() =>
+  import('./components/pages/AllToolsPage').then((m) => ({ default: m.AllToolsPage })),
+);
+const CategoriesPage = lazy(() =>
+  import('./components/pages/CategoriesPage').then((m) => ({ default: m.CategoriesPage })),
+);
+const StaticAboutPage = lazy(() =>
+  import('./components/pages/StaticPages').then((m) => ({ default: m.AboutPage })),
+);
+const StaticBlogPage = lazy(() =>
+  import('./components/pages/StaticPages').then((m) => ({ default: m.BlogPage })),
+);
+const StaticContactPage = lazy(() =>
+  import('./components/pages/StaticPages').then((m) => ({ default: m.ContactPage })),
+);
+const StaticPrivacyPage = lazy(() =>
+  import('./components/pages/StaticPages').then((m) => ({ default: m.PrivacyPage })),
+);
+const StaticTermsPage = lazy(() =>
+  import('./components/pages/StaticPages').then((m) => ({ default: m.TermsPage })),
+);
+const StaticNotFoundPage = lazy(() =>
+  import('./components/pages/StaticPages').then((m) => ({ default: m.NotFoundPage })),
+);
 import { CATEGORIES } from './data/categories';
 import { TOOLS, getToolBySlug } from './data/tools';
 import { Tool } from './types';
@@ -122,6 +147,13 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Lightweight route fallback — no spinner lib, no layout shift.
+  const RouteFallback = (
+    <div className="min-h-[50vh] flex items-center justify-center" aria-busy="true" aria-label="Loading page">
+      <div className="w-10 h-10 rounded-full border-2 border-[#6657FF]/25 border-t-[#6657FF] animate-spin" />
+    </div>
+  );
+
   // Determine active view
   const renderContent = () => {
     // 1. Home Page
@@ -143,21 +175,25 @@ export default function App() {
     // 2. All Tools Directory
     if (currentPath === '/tools') {
       return (
-        <AllToolsPage
-          onNavigateHome={() => handleNavigate('/')}
-          onSelectTool={handleSelectTool}
-          onSelectCategory={handleSelectCategory}
-        />
+        <Suspense fallback={RouteFallback}>
+          <AllToolsPage
+            onNavigateHome={() => handleNavigate('/')}
+            onSelectTool={handleSelectTool}
+            onSelectCategory={handleSelectCategory}
+          />
+        </Suspense>
       );
     }
 
     // 3. Categories Hub
     if (currentPath === '/categories') {
       return (
-        <CategoriesPage
-          onNavigateHome={() => handleNavigate('/')}
-          onSelectCategory={handleSelectCategory}
-        />
+        <Suspense fallback={RouteFallback}>
+          <CategoriesPage
+            onNavigateHome={() => handleNavigate('/')}
+            onSelectCategory={handleSelectCategory}
+          />
+        </Suspense>
       );
     }
 
@@ -167,12 +203,14 @@ export default function App() {
       const category = CATEGORIES.find((c) => c.slug === categorySlug);
       if (category) {
         return (
-          <CategoryPage
-            category={category}
-            onNavigateHome={() => handleNavigate('/')}
-            onSelectTool={handleSelectTool}
-            onNavigateCategory={handleSelectCategory}
-          />
+          <Suspense fallback={RouteFallback}>
+            <CategoryPage
+              category={category}
+              onNavigateHome={() => handleNavigate('/')}
+              onSelectTool={handleSelectTool}
+              onNavigateCategory={handleSelectCategory}
+            />
+          </Suspense>
         );
       }
     }
@@ -184,12 +222,14 @@ export default function App() {
       const tool = getToolBySlug(toolSlug);
       if (tool) {
         return (
-          <ToolPageShell
-            tool={tool}
-            onNavigateHome={() => handleNavigate('/')}
-            onNavigateCategory={handleSelectCategory}
-            onSelectTool={handleSelectTool}
-          />
+          <Suspense fallback={RouteFallback}>
+            <ToolPageShell
+              tool={tool}
+              onNavigateHome={() => handleNavigate('/')}
+              onNavigateCategory={handleSelectCategory}
+              onSelectTool={handleSelectTool}
+            />
+          </Suspense>
         );
       }
     }
@@ -197,55 +237,67 @@ export default function App() {
     // 6. Static Pages
     if (currentPath === '/about') {
       return (
-        <AboutPage
-          onNavigateHome={() => handleNavigate('/')}
-          onNavigateTools={() => handleNavigate('/tools')}
-        />
+        <Suspense fallback={RouteFallback}>
+          <StaticAboutPage
+            onNavigateHome={() => handleNavigate('/')}
+            onNavigateTools={() => handleNavigate('/tools')}
+          />
+        </Suspense>
       );
     }
 
     if (currentPath === '/blog') {
       return (
-        <BlogPage
-          onNavigateHome={() => handleNavigate('/')}
-          onNavigateTools={() => handleNavigate('/tools')}
-        />
+        <Suspense fallback={RouteFallback}>
+          <StaticBlogPage
+            onNavigateHome={() => handleNavigate('/')}
+            onNavigateTools={() => handleNavigate('/tools')}
+          />
+        </Suspense>
       );
     }
 
     if (currentPath === '/contact') {
       return (
-        <ContactPage
-          onNavigateHome={() => handleNavigate('/')}
-          onNavigateTools={() => handleNavigate('/tools')}
-        />
+        <Suspense fallback={RouteFallback}>
+          <StaticContactPage
+            onNavigateHome={() => handleNavigate('/')}
+            onNavigateTools={() => handleNavigate('/tools')}
+          />
+        </Suspense>
       );
     }
 
     if (currentPath === '/privacy') {
       return (
-        <PrivacyPage
-          onNavigateHome={() => handleNavigate('/')}
-          onNavigateTools={() => handleNavigate('/tools')}
-        />
+        <Suspense fallback={RouteFallback}>
+          <StaticPrivacyPage
+            onNavigateHome={() => handleNavigate('/')}
+            onNavigateTools={() => handleNavigate('/tools')}
+          />
+        </Suspense>
       );
     }
 
     if (currentPath === '/terms') {
       return (
-        <TermsPage
-          onNavigateHome={() => handleNavigate('/')}
-          onNavigateTools={() => handleNavigate('/tools')}
-        />
+        <Suspense fallback={RouteFallback}>
+          <StaticTermsPage
+            onNavigateHome={() => handleNavigate('/')}
+            onNavigateTools={() => handleNavigate('/tools')}
+          />
+        </Suspense>
       );
     }
 
     // 7. Not Found
     return (
-      <NotFoundPage
-        onNavigateHome={() => handleNavigate('/')}
-        onNavigateTools={() => handleNavigate('/tools')}
-      />
+      <Suspense fallback={RouteFallback}>
+        <StaticNotFoundPage
+          onNavigateHome={() => handleNavigate('/')}
+          onNavigateTools={() => handleNavigate('/tools')}
+        />
+      </Suspense>
     );
   };
 
@@ -273,13 +325,17 @@ export default function App() {
         onOpenSearch={() => setIsSearchOpen(true)}
       />
 
-      {/* Global Command Palette / Search Modal */}
-      <SearchModal
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onSelectTool={handleSelectTool}
-        onSelectCategory={handleSelectCategory}
-      />
+      {/* Global Command Palette / Search Modal (lazy: only loads when opened) */}
+      {isSearchOpen && (
+        <Suspense fallback={null}>
+          <SearchModal
+            isOpen={isSearchOpen}
+            onClose={() => setIsSearchOpen(false)}
+            onSelectTool={handleSelectTool}
+            onSelectCategory={handleSelectCategory}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

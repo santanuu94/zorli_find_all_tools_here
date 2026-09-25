@@ -34,7 +34,7 @@ export const Ecosystem: React.FC = () => {
   ];
 
   return (
-    <section className="relative py-20 md:py-28 bg-[#F7F8FC] dark:bg-[#0A0F2D] border-t border-slate-200/80 dark:border-white/10 transition-colors overflow-hidden">
+    <section className="cv-auto relative py-20 md:py-28 bg-[#F7F8FC] dark:bg-[#0A0F2D] border-t border-slate-200/80 dark:border-white/10 transition-colors overflow-hidden">
       {/* Background Subtle Sparkle Accents */}
       <div className="absolute top-10 right-10 opacity-[0.06] dark:opacity-[0.08] pointer-events-none -z-0 scale-150">
         <ZorliSparkle size={160} glow={false} variant="primary" />

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useDeferredValue } from 'react';
 import { Search, ArrowRight, X, Sparkles } from 'lucide-react';
 import { Tool } from '../../types';
 import { searchTools } from '../../data/tools';
@@ -23,15 +23,20 @@ export const ToolSearch: React.FC<ToolSearchProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // useDeferredValue keeps typing at 60fps even when the catalogue grows to
+  // hundreds of tools across many families: keystrokes render immediately,
+  // filtering runs at a lower priority. Same results, no input jank.
+  const deferredQuery = useDeferredValue(query);
+
   // Filter tools
-  const results = React.useMemo(() => {
-    if (!query.trim()) return [];
-    let list = searchTools(query);
+  const results = useMemo(() => {
+    if (!deferredQuery.trim()) return [];
+    let list = searchTools(deferredQuery);
     if (categoryFilter) {
       list = list.filter((t) => t.category === categoryFilter);
     }
     return list.slice(0, 6);
-  }, [query, categoryFilter]);
+  }, [deferredQuery, categoryFilter]);
 
   // Click outside to close
   useEffect(() => {

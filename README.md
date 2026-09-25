@@ -41,7 +41,7 @@ Rules that keep this honest:
 | Build tool   | Vite 8                            |
 | Styling      | Tailwind CSS 4                    |
 | Icons        | Lucide React                      |
-| Animation    | Motion (Framer)                   |
+| Animation    | CSS keyframes (GPU compositor, reduced-motion aware) |
 | Testing      | Jest + ts-jest + Testing Library  |
 | Deployment   | Cloudflare Pages                  |
 

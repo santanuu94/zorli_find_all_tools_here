@@ -1,6 +1,5 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { motion } from 'motion/react';
 import { Container } from '../ui/Container';
 import { Button } from '../ui/Button';
 import { ZorliSparkle } from '../brand/ZorliSparkle';
@@ -11,7 +10,7 @@ interface CTASectionProps {
 
 export const CTASection: React.FC<CTASectionProps> = ({ onStartExploring }) => {
   return (
-    <section className="relative py-28 md:py-36 bg-gradient-to-b from-slate-100 via-indigo-50/50 to-slate-50 dark:from-[#070B24] dark:via-[#070B24] dark:to-[#0A0F35] overflow-hidden select-none transition-colors duration-300">
+    <section className="cv-auto relative py-28 md:py-36 bg-gradient-to-b from-slate-100 via-indigo-50/50 to-slate-50 dark:from-[#070B24] dark:via-[#070B24] dark:to-[#0A0F35] overflow-hidden select-none transition-colors duration-300">
       {/* Planetary Horizon Glow & Sparkles */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Deep starry specks */}
@@ -20,22 +19,19 @@ export const CTASection: React.FC<CTASectionProps> = ({ onStartExploring }) => {
         <div className="absolute top-40 left-16 w-1.5 h-1.5 bg-cyan-500/50 dark:bg-cyan-300/60 rounded-full blur-[0.5px]" />
         <div className="absolute bottom-28 right-20 w-2 h-2 bg-violet-400/40 dark:bg-violet-300/50 rounded-full blur-[1px]" />
 
-        {/* Ambient Floating Brand Stars */}
-        <motion.div
-          animate={{ y: [-8, 8, -8], rotate: [-5, 5, -5] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-16 left-[12%] opacity-60"
+        {/* Ambient Floating Brand Stars (CSS-only) */}
+        <div
+          className="absolute top-16 left-[12%] opacity-60 anim-drift"
         >
           <ZorliSparkle size={36} variant="cyan" />
-        </motion.div>
+        </div>
 
-        <motion.div
-          animate={{ y: [10, -10, 10], rotate: [4, -4, 4] }}
-          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          className="absolute top-20 right-[14%] opacity-70"
+        <div
+          className="absolute top-20 right-[14%] opacity-70 anim-float-xy"
+          style={{ animationDelay: '1s', animationDuration: '7s' }}
         >
           <ZorliSparkle size={44} variant="primary" />
-        </motion.div>
+        </div>
 
         {/* Giant Watermark Star */}
         <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-[0.03] dark:opacity-[0.035] scale-[4] blur-[1px]">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useDeferredValue } from 'react';
 import { Search, X, ArrowRight, Sparkles } from 'lucide-react';
 import { Tool } from '../../types';
 import { TOOLS, searchTools } from '../../data/tools';
@@ -17,6 +17,8 @@ export const SearchModal: React.FC<SearchModalProps> = ({
   onSelectTool,
 }) => {
   const [query, setQuery] = useState('');
+  // Defer filtering so the modal stays responsive as more tool families land.
+  const deferredQuery = useDeferredValue(query);
 
   // Close on Escape key
   useEffect(() => {
@@ -29,7 +31,9 @@ export const SearchModal: React.FC<SearchModalProps> = ({
 
   if (!isOpen) return null;
 
-  const results = query.trim() ? searchTools(query) : TOOLS.filter((t) => t.popular || t.featured).slice(0, 8);
+  const results = deferredQuery.trim()
+    ? searchTools(deferredQuery)
+    : TOOLS.filter((t) => t.popular || t.featured).slice(0, 8);
 
   // Suggestion pills are derived from the catalogue so the modal can never
   // advertise a tool the app does not have.
@@ -88,7 +92,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
         {/* Results List */}
         <div className="p-3 overflow-y-auto divide-y divide-slate-100 dark:divide-white/5 flex-1">
           <div className="px-3 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-            {query.trim() ? `Search Results (${results.length})` : 'Popular & Featured Tools'}
+            {deferredQuery.trim() ? `Search Results (${results.length})` : 'Popular & Featured Tools'}
           </div>
 
           {results.length === 0 ? (

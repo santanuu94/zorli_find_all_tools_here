@@ -10,6 +10,25 @@ export default defineConfig(() => {
         '@': new URL('.', import.meta.url).pathname,
       },
     },
+    build: {
+      // Long-term caching + smaller first paint. react-vendor rarely changes so
+      // repeat visits (and Cloudflare edge cache) reuse it; route chunks load
+      // on demand via React.lazy in App.tsx. Future tool families MUST stay
+      // behind dynamic registry loaders so they become their own chunks too —
+      // never import a family statically into the home bundle.
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+              return 'react-vendor';
+            }
+            return undefined;
+          },
+        },
+      },
+      // Keep the deploy honest: warn early if the initial bundle regresses.
+      chunkSizeWarningLimit: 300,
+    },
     server: {
       // HMR is disabled in AI Studio via DISABLE_HMR env var.
       // Do not modifyâfile watching is disabled to prevent flickering during agent edits.

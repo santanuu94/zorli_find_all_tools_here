@@ -22,10 +22,22 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
+    // rAF-throttled scroll listener: Navbar only needs to know scrolled/not.
+    // Unthrottled setState on every scroll pixel forces re-renders + style
+    // recalc in Chrome, especially on low-end/mobile devices.
+    let ticking = false;
+    const update = () => {
+      ticking = false;
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

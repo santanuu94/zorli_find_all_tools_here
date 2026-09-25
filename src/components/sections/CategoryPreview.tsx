@@ -9,7 +9,7 @@ interface CategoryPreviewProps {
 
 export const CategoryPreview: React.FC<CategoryPreviewProps> = ({ onSelectCategory }) => {
   return (
-    <section className="relative py-12 md:py-16 bg-[#F7F8FC] dark:bg-[#0A0F2D] border-y border-slate-200/80 dark:border-white/10 transition-colors">
+    <section className="cv-auto relative py-12 md:py-16 bg-[#F7F8FC] dark:bg-[#0A0F2D] border-y border-slate-200/80 dark:border-white/10 transition-colors">
       <Container>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 sm:gap-4">
           {CATEGORIES.map((category) => (

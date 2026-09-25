@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'motion/react';
 import { ZorliSparkle } from '../brand/ZorliSparkle';
 
 export const HeroVisual: React.FC = () => {
@@ -14,29 +13,19 @@ export const HeroVisual: React.FC = () => {
       <div className="absolute w-[360px] h-[360px] sm:w-[430px] sm:h-[430px] rounded-full border border-indigo-400/40 dark:border-indigo-500/25 pointer-events-none animate-[spin_60s_linear_infinite]" />
       <div className="absolute w-[280px] h-[280px] sm:w-[330px] sm:h-[330px] rounded-full border border-violet-400/45 dark:border-violet-400/30 border-dashed pointer-events-none animate-[spin_45s_linear_infinite_reverse]" />
 
-      {/* Orbiting Sparkle Star */}
-      <motion.div
-        animate={{
-          rotate: 360,
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-        className="absolute w-[360px] h-[360px] sm:w-[430px] sm:h-[430px] pointer-events-none"
+      {/* Orbiting Sparkle Star (CSS-only orbit) */}
+      <div
+        className="absolute w-[360px] h-[360px] sm:w-[430px] sm:h-[430px] pointer-events-none anim-orbit"
       >
         <div className="absolute top-2 left-1/2 -translate-x-1/2">
           <ZorliSparkle size={18} variant="cyan" />
         </div>
-      </motion.div>
+      </div>
 
-      {/* Handwritten Annotation with Arrow */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-        className="absolute -right-2 top-28 sm:right-2 sm:top-24 z-20 pointer-events-none text-right"
+      {/* Handwritten Annotation with Arrow (CSS-only entrance) */}
+      <div
+        className="absolute -right-2 top-28 sm:right-2 sm:top-24 z-20 pointer-events-none text-right anim-fade-scale-in"
+        style={{ animationDelay: '0.5s' }}
       >
         <div className="font-hand text-2xl sm:text-3xl text-indigo-900 dark:text-indigo-200 rotate-6 tracking-wide drop-shadow-[0_2px_8px_rgba(255,255,255,0.8)] dark:drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] font-semibold">
           All your tools.
@@ -55,166 +44,109 @@ export const HeroVisual: React.FC = () => {
           <path d="M 40 10 Q 25 35 10 32" />
           <path d="M 16 26 L 10 32 L 17 38" />
         </svg>
-      </motion.div>
+      </div>
 
       {/* =========================================================================
           FREE-FLOATING 3D GLASS TOOL LOGOS (CLEAN SVG CUTOUTS WITH DROP SHADOWS)
           ========================================================================= */}
 
       {/* 1. PDF Glass Logo (Top Left) */}
-      <motion.div
-        animate={{
-          y: [-8, 8, -8],
-          x: [-3, 3, -3],
-          rotate: [-4, 3, -4],
-        }}
-        transition={{
-          duration: 5.2,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="absolute top-6 left-8 sm:left-12 z-20 cursor-pointer group"
-      >
+      <div className="absolute top-6 left-8 sm:left-12 z-20 cursor-pointer group anim-float-xy">
         <img
+          loading="lazy"
+          decoding="async"
+          width="80"
+          height="80"
           src="/tool-assets/glass/glass-pdf.svg"
           alt="PDF Tool Logo"
           className="w-14 sm:w-18 h-auto select-none pointer-events-auto filter drop-shadow-[0_12px_24px_rgba(225,29,72,0.45)] group-hover:scale-115 group-hover:drop-shadow-[0_18px_36px_rgba(225,29,72,0.8)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
 
       {/* 2. Image Glass Logo (Top Center/Right) */}
-      <motion.div
-        animate={{
-          y: [6, -10, 6],
-          x: [3, -3, 3],
-          rotate: [3, -4, 3],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 0.5,
-        }}
-        className="absolute top-2 right-24 sm:right-32 z-20 cursor-pointer group"
-      >
+      <div className="absolute top-2 right-24 sm:right-32 z-20 cursor-pointer group anim-float-y">
         <img
+          loading="lazy"
+          decoding="async"
+          width="80"
+          height="80"
           src="/tool-assets/glass/glass-image.svg"
           alt="Image Tool Logo"
           className="w-16 sm:w-20 h-auto select-none pointer-events-auto filter drop-shadow-[0_12px_24px_rgba(2,132,199,0.45)] group-hover:scale-115 group-hover:drop-shadow-[0_18px_36px_rgba(2,132,199,0.8)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
 
       {/* 3. Calculator Glass Logo (Top Far Right) */}
-      <motion.div
-        animate={{
-          y: [-6, 7, -6],
-          rotate: [-3, 4, -3],
-        }}
-        transition={{
-          duration: 5.6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1.1,
-        }}
-        className="absolute top-8 right-6 sm:right-10 z-20 cursor-pointer group"
-      >
+      <div className="absolute top-8 right-6 sm:right-10 z-20 cursor-pointer group anim-float-y">
         <img
+          loading="lazy"
+          decoding="async"
+          width="80"
+          height="80"
           src="/tool-assets/glass/glass-calculator.svg"
           alt="Calculator Tool Logo"
           className="w-14 sm:w-17 h-auto select-none pointer-events-auto filter drop-shadow-[0_12px_24px_rgba(5,150,105,0.45)] group-hover:scale-115 group-hover:drop-shadow-[0_18px_36px_rgba(5,150,105,0.8)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
 
       {/* 4. Code Glass Logo (Middle Right) */}
-      <motion.div
-        animate={{
-          y: [8, -7, 8],
-          x: [-3, 3, -3],
-          rotate: [2, -3, 2],
-        }}
-        transition={{
-          duration: 4.9,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 1.6,
-        }}
-        className="absolute top-40 right-1 sm:right-4 z-20 cursor-pointer group"
-      >
+      <div className="absolute top-40 right-1 sm:right-4 z-20 cursor-pointer group anim-float-y">
         <img
+          loading="lazy"
+          decoding="async"
+          width="80"
+          height="80"
           src="/tool-assets/glass/glass-code.svg"
           alt="Developer Code Tool Logo"
           className="w-16 sm:w-20 h-auto select-none pointer-events-auto filter drop-shadow-[0_12px_24px_rgba(139,92,246,0.45)] group-hover:scale-115 group-hover:drop-shadow-[0_18px_36px_rgba(139,92,246,0.8)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
 
       {/* 5. Text 'T' Glass Logo (Bottom Right) */}
-      <motion.div
-        animate={{
-          y: [-7, 7, -7],
-          rotate: [4, -4, 4],
-        }}
-        transition={{
-          duration: 5.3,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 2.1,
-        }}
-        className="absolute bottom-14 right-12 sm:right-18 z-20 cursor-pointer group"
-      >
+      <div className="absolute bottom-14 right-12 sm:right-18 z-20 cursor-pointer group anim-drift">
         <img
+          loading="lazy"
+          decoding="async"
+          width="80"
+          height="80"
           src="/tool-assets/glass/glass-text.svg"
           alt="Text Tool Logo"
           className="w-14 sm:w-17 h-auto select-none pointer-events-auto filter drop-shadow-[0_12px_24px_rgba(217,119,6,0.45)] group-hover:scale-115 group-hover:drop-shadow-[0_18px_36px_rgba(217,119,6,0.8)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
 
       {/* 6. Cloud Glass Logo (Bottom Left) */}
-      <motion.div
-        animate={{
-          y: [7, -7, 7],
-          x: [4, -4, 4],
-          rotate: [-3, 3, -3],
-        }}
-        transition={{
-          duration: 5.8,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: 0.9,
-        }}
-        className="absolute bottom-12 left-12 sm:left-18 z-20 cursor-pointer group"
-      >
+      <div className="absolute bottom-12 left-12 sm:left-18 z-20 cursor-pointer group anim-float-xy">
         <img
+          loading="lazy"
+          decoding="async"
+          width="80"
+          height="80"
           src="/tool-assets/glass/glass-cloud.svg"
           alt="Cloud Tool Logo"
           className="w-16 sm:w-20 h-auto select-none pointer-events-auto filter drop-shadow-[0_12px_24px_rgba(2,132,199,0.45)] group-hover:scale-115 group-hover:drop-shadow-[0_18px_36px_rgba(2,132,199,0.8)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
 
       {/* =========================================================================
           CENTRAL HERO FREE-FLOATING 3D GLASS ZORLI LOGO
           ========================================================================= */}
-      <motion.div
-        animate={{
-          y: [-6, 6, -6],
-          rotateZ: [-1, 1, -1],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-        className="relative z-10 flex flex-col items-center justify-center cursor-pointer group select-none"
-      >
+      <div className="relative z-10 flex flex-col items-center justify-center cursor-pointer group select-none anim-float-y">
         {/* Ambient radial glow behind the glass logo */}
         <div className="absolute w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-r from-[#6657FF]/20 via-[#8B5CF6]/20 to-[#35D9E8]/20 blur-3xl pointer-events-none group-hover:scale-110 transition-transform duration-500" />
 
         {/* Floating Glass Zorli Logo */}
         <img
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
+          width="224"
+          height="224"
           src="/tool-assets/glass/glass-zorli.svg"
           alt="Zorli Logo"
           className="w-44 sm:w-56 h-auto select-none pointer-events-auto filter drop-shadow-[0_16px_36px_rgba(99,102,241,0.5)] group-hover:scale-108 group-hover:drop-shadow-[0_22px_45px_rgba(99,102,241,0.75)] transition-all duration-300 transform-gpu"
         />
-      </motion.div>
+      </div>
     </div>
   );
 };

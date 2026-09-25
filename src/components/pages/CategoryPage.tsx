@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import {
   Zap,
   Shield,
@@ -122,12 +121,10 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({
                 {/* Background Glow */}
                 <div className="absolute inset-0 bg-radial from-[#6657FF]/30 to-transparent blur-3xl pointer-events-none" />
 
-                {/* Handwritten Annotation with Arrow */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 }}
-                  className="absolute -right-2 top-8 sm:right-2 z-20 pointer-events-none text-right"
+                {/* Handwritten Annotation with Arrow (CSS-only entrance) */}
+                <div
+                  className="absolute -right-2 top-8 sm:right-2 z-20 pointer-events-none text-right anim-fade-scale-in"
+                  style={{ animationDelay: '0.3s' }}
                 >
                   <div className="font-handwriting text-2xl sm:text-3xl text-indigo-200 rotate-6 tracking-wide drop-shadow-md">
                     Do more
@@ -145,14 +142,10 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({
                     <path d="M 40 10 Q 25 35 10 32" />
                     <path d="M 16 26 L 10 32 L 17 38" />
                   </svg>
-                </motion.div>
+                </div>
 
                 {/* Central layered cards */}
-                <motion.div
-                  animate={{ y: [-5, 5, -5], rotate: [-1, 1, -1] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative z-10 w-52 h-64 sm:w-60 sm:h-72 rounded-3xl bg-gradient-to-br from-white/90 to-white/40 p-[1.5px] shadow-2xl backdrop-blur-xl"
-                >
+                <div className="relative z-10 w-52 h-64 sm:w-60 sm:h-72 rounded-3xl bg-gradient-to-br from-white/90 to-white/40 p-[1.5px] shadow-2xl backdrop-blur-xl anim-drift">
                   <div className="w-full h-full bg-[#EBF0FF]/90 rounded-[22px] p-6 flex flex-col justify-between border border-white/80 shadow-inner">
                     <div className="flex items-center justify-between">
                       <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-600 flex items-center justify-center font-bold">
@@ -168,54 +161,38 @@ export const CategoryPage: React.FC<CategoryPageProps> = ({
                       <Sparkles className="w-10 h-10 text-indigo-500/60" />
                     </div>
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Floating Badge 1: Compress */}
-                <motion.div
-                  animate={{ y: [-6, 6, -6], x: [-3, 3, -3] }}
-                  transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-                  className="absolute top-12 left-4 sm:left-6 z-20"
-                >
+                <div className="absolute top-12 left-4 sm:left-6 z-20 anim-float-xy">
                   <div className="px-4 py-2 rounded-2xl bg-gradient-to-r from-[#6657FF] to-[#8B5CF6] text-white font-bold text-xs sm:text-sm shadow-xl shadow-[#6657FF]/40 border border-white/20">
                     Compress
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Floating Badge 2: Resize */}
-                <motion.div
-                  animate={{ y: [6, -6, 6], x: [3, -3, 3] }}
-                  transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                  className="absolute top-6 right-20 sm:right-28 z-20"
-                >
+                <div className="absolute top-6 right-20 sm:right-28 z-20 anim-float-xy">
                   <div className="px-3.5 py-1.5 rounded-2xl bg-blue-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-blue-900/40 border border-white/20 flex items-center gap-1.5">
                     <Maximize2 className="w-3.5 h-3.5" />
                     Resize
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Floating Badge 3: Convert */}
-                <motion.div
-                  animate={{ y: [-5, 7, -5] }}
-                  transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                  className="absolute bottom-16 right-4 sm:right-6 z-20"
-                >
+                <div className="absolute bottom-16 right-4 sm:right-6 z-20 anim-float-y">
                   <div className="px-3.5 py-1.5 rounded-2xl bg-sky-500 text-white font-bold text-xs sm:text-sm shadow-xl shadow-sky-900/40 border border-white/20 flex items-center gap-1.5">
                     <FileCode2 className="w-3.5 h-3.5" />
                     Convert
                   </div>
-                </motion.div>
+                </div>
 
                 {/* Floating Badge 4: Edit */}
-                <motion.div
-                  animate={{ y: [7, -5, 7] }}
-                  transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
-                  className="absolute bottom-10 left-12 sm:left-16 z-20"
-                >
+                <div className="absolute bottom-10 left-12 sm:left-16 z-20 anim-float-y">
                   <div className="px-4 py-1.5 rounded-2xl bg-indigo-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-indigo-900/40 border border-white/20 flex items-center gap-1.5">
                     <Crop className="w-3.5 h-3.5" />
                     Edit
                   </div>
-                </motion.div>
+                </div>
               </div>
             </div>
           </div>

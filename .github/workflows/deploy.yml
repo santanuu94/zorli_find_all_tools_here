@@ -63,5 +63,12 @@ jobs:
               tail -n 40 deploy.log
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
+
+            # Job logs require authentication to download, so echo the cause as an
+            # annotation instead - annotations are readable from the public checks API
+            # (and rendered at the top of the failing file/step in the UI).
+            detail=$(sed -e 's/\x1b\[[0-9;]*m//g' deploy.log | grep -aiE 'error|authentication|unauthor|invalid|denied|forbidden|not found|code:' | tail -n 5 | tr '\n' ' ' | cut -c1-900)
+            [ -n "$detail" ] || detail=$(sed -e 's/\x1b\[[0-9;]*m//g' deploy.log | tail -n 5 | tr '\n' ' ')
+            echo "::error title=Cloudflare Pages deploy failed::$detail"
             exit 1
           fi

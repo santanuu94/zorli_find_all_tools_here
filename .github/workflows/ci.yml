@@ -17,14 +17,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
 
-      # npm ci is deliberately not used here: its strict package.json/package-lock.json
-      # sync check rejects the committed lockfile on Linux because the lock records
-      # Windows-resolved platform-specific optional dependencies (the Vite 8 rolldown and
-      # Tailwind oxide native bindings plus their wasm32-wasi/@emnapi subtrees). That made
-      # this step fail on every run, so Lint, Test and Build never executed.
-      # npm install resolves for the runner's own platform and is not subject to that check.
+      # npm ci's strict package.json/lock sync check rejects the committed lockfile
+      # on Linux: it records Windows-resolved platform-specific optional native
+      # bindings (Vite rolldown + Tailwind oxide + their wasm32-wasi/@emnapi
+      # subtrees), e.g. "Missing: @emnapi/core / @emnapi/runtime from lock file".
+      # The setup-node `cache: npm` step performs that same sync check, so it is
+      # deliberately NOT enabled here - it fails before install ever executes.
+      # Plain `npm install` resolves for the runner's own platform instead.
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 

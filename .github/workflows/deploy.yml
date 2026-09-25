@@ -20,11 +20,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
 
-      # See .github/workflows/ci.yml for why npm ci is not used: the lockfile records
-      # Windows-resolved platform-specific optional dependencies, which npm ci rejects on
-      # Linux and which blocked this step on every previous run.
+      # Same install rule as CI: plain `npm install`, no `cache: npm` - see
+      # .github/workflows/ci.yml. The Windows-resolved Vite/Tailwind optional
+      # native subtrees trip both `npm ci`'s and the cache step's sync check on
+      # Linux ("Missing: @emnapi/core / @emnapi/runtime from lock file"), so
+      # `cache: npm` fails the job before install ever executes.
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 

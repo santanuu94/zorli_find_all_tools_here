@@ -1,0 +1,9 @@
+# Cloudflare Pages configuration.
+# Used by `wrangler pages deploy` and the GitHub Actions deploy workflow.
+# Project name must match the Cloudflare Pages project (created on first deploy).
+
+name = "zorli"
+compatibility_date = "2026-09-25"
+
+# Static site only — the output of `npm run build`.
+pages_build_output_dir = "dist"

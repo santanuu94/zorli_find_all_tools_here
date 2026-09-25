@@ -22,12 +22,17 @@ Required GitHub repository secrets
 | CLOUDFLARE_ACCOUNT_ID   | Your Cloudflare account id (dashboard right sidebar)              |
 
 The Pages project name is passed to the workflow as `--project-name=zorli`
-(it is created automatically on the first deploy). To use a different project
+The workflow creates it first with
+`wrangler pages project create zorli --production-branch=main`, because
+`wrangler pages deploy` cannot create a missing project in a non-interactive
+CI context (it exits 1 with "project not found"). The create step is
+idempotent, so you can also create the project by hand from the dashboard.
+To use a different project
 name, change it in .github/workflows/deploy.yml and wrangler.toml.
 
 How it works:
 - Push to main (or run the workflow manually).
-- The workflow runs `npm ci`, then `npm run build`.
+- The workflow runs `npm install`, then `npm run build`.
 - `wrangler pages deploy dist --project-name=zorli --branch=main` uploads ./dist.
 
 Notes and troubleshooting:

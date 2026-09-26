@@ -3,4 +3,5 @@
 User-agent: *
 Allow: /
 
+# Sitemap (absolute URL required). Update the host if a custom domain is added.
 Sitemap: https://zorli.pages.dev/sitemap.xml

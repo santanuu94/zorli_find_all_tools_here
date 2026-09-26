@@ -63,14 +63,13 @@ describe('Deep-link routing', () => {
     expect(screen.getByText('Image Compressor')).toBeInTheDocument();
   });
 
-  test('deep link to a coming-soon tool shows the honest placeholder, not a working tool', async () => {
+  test('deep link to active tool loads the working studio workspace', async () => {
     window.history.pushState({}, '', '/tools/image/image-compressor');
     render(<App />);
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Image Compressor' })).toBeInTheDocument();
-    expect(screen.getByText(/is not available yet/i)).toBeInTheDocument();
-    // The fabricated success state must never be reachable.
-    expect(screen.queryByText(/-55%/)).not.toBeInTheDocument();
+    expect(await screen.findByText(/Drop images here, or browse files/i)).toBeInTheDocument();
+    expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
   });
 
   test('an unknown tool route falls through to the 404 page', async () => {

@@ -33,6 +33,7 @@ export interface Tool {
   tags?: string[];
   features?: string[];
   howItWorks?: { step: number; title: string; description: string }[];
+  guides?: { title: string; description: string; items?: { title: string; text: string }[] }[];
   faqs?: { question: string; answer: string }[];
 }
 

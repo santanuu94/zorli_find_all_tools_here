@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Clock,
   Lock,
+  BookOpen,
 } from 'lucide-react';
 import { Tool, ToolCategory } from '../../types';
 import { getToolsByCategory, getToolModuleBySlug } from '../../features/tools';
@@ -41,13 +42,13 @@ export const ToolPageShell: React.FC<ToolPageShellProps> = ({
   useEffect(() => {
     // Cancel previous load if there's a cleanup function (not implemented here for simplicity)
     getToolModuleBySlug(tool.slug).then(module => {
-      setToolComponent(module?.Component ?? null);
+      setToolComponent(() => module?.Component ?? null);
     });
   }, [tool.slug]);
 
   const category = CATEGORIES.find((c) => c.slug === tool.category) || CATEGORIES[0];
   const relatedTools = getToolsByCategory(tool.category)
-    .filter((t) => t.slug !== tool.slug)
+    .filter((t) => t.slug !== tool.slug && t.status === 'available')
     .slice(0, 4);
 
   return (
@@ -264,6 +265,59 @@ export const ToolPageShell: React.FC<ToolPageShellProps> = ({
           </div>
         </Container>
       </section>
+
+      {/* 4.5 Educational Guides & In-Depth Technical Content */}
+      {tool.guides && tool.guides.length > 0 && (
+        <section className="py-14 bg-slate-50/50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/10">
+          <Container>
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#8B5CF6] mb-2 block">
+                Guide & Technical Reference
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black font-display text-slate-900 dark:text-white tracking-tight">
+                Understanding {tool.name}
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {tool.guides.map((guide, idx) => (
+                <div
+                  key={idx}
+                  className="p-7 rounded-3xl bg-white dark:bg-[#0D1438] border border-slate-200/80 dark:border-white/10 shadow-sm flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 flex items-center justify-center mb-5">
+                      <BookOpen className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-lg font-bold font-display text-slate-900 dark:text-white mb-3">
+                      {guide.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
+                      {guide.description}
+                    </p>
+
+                    {guide.items && (
+                      <div className="space-y-4">
+                        {guide.items.map((item, itemIdx) => (
+                          <div key={itemIdx} className="text-xs leading-relaxed">
+                            <h4 className="font-bold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#6657FF]" />
+                              {item.title}
+                            </h4>
+                            <p className="text-slate-500 dark:text-slate-400 pl-3">
+                              {item.text}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
 
       {/* 5. FAQs Section */}
       <section className="py-14">

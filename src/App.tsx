@@ -88,25 +88,58 @@ export default function App() {
   useEffect(() => {
     const base = 'Zorli — Simple Tools for a Smarter You';
     let title = base;
+    let description =
+      'Free, fast and easy-to-use online tools for everyday problems. Simple tools for a smarter you.';
 
     if (currentPath === '/tools') {
       title = 'All Tools — Zorli';
+      description = 'Browse all free, fast online utilities available on Zorli.';
     } else if (currentPath === '/categories') {
       title = 'Categories — Zorli';
+      description = 'Explore tools by category: Image, PDF, Developer, and more.';
     } else if (currentPath.startsWith('/categories/')) {
       const category = CATEGORIES.find((c) => c.slug === currentPath.replace('/categories/', ''));
-      if (category) title = `${category.name} — Zorli`;
+      if (category) {
+        title = `${category.name} — Zorli`;
+        description = category.description;
+      }
     } else if (currentPath.startsWith('/tools/')) {
       const parts = currentPath.replace('/tools/', '').split('/').filter(Boolean);
       const tool = getToolBySlug(parts.length > 1 ? parts[1] : parts[0]);
       if (tool) {
-        title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
+        if (tool.slug === 'image-compressor') {
+          title = 'Image Compressor - Compress Images Online | Zorli';
+          description =
+            "Compress JPG, PNG and WebP images directly in your browser. Reduce image file size while keeping quality with Zorli's free image compressor.";
+        } else {
+          title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
+          description = tool.description;
+        }
       }
     } else if (currentPath !== '/') {
       title = `${currentPath.replace('/', '').replace(/^\w/, (c) => c.toUpperCase())} — Zorli`;
     }
 
     document.title = title;
+
+    // Sync canonical link tag
+    if (typeof document !== 'undefined') {
+      const canonicalPath = currentPath === '/' ? '' : currentPath;
+      const canonicalUrl = `https://zorli.pages.dev${canonicalPath}`;
+      let canonicalEl = document.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
+      if (!canonicalEl) {
+        canonicalEl = document.createElement('link');
+        canonicalEl.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalEl);
+      }
+      canonicalEl.setAttribute('href', canonicalUrl);
+
+      // Sync meta description
+      let metaDesc = document.querySelector("meta[name='description']") as HTMLMetaElement | null;
+      if (metaDesc) {
+        metaDesc.setAttribute('content', description);
+      }
+    }
   }, [currentPath]);
 
   // Support browser back/forward.

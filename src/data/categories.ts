@@ -49,7 +49,7 @@ export const CATEGORIES: ToolCategory[] = [
     proTip: {
       title: 'Pro Tip',
       description:
-        'Need a smaller image for a form or website? Our Image Compressor is coming soon — it will trim file size in a single click.',
+        'Need a smaller image for a form or website? Use our Image Compressor to trim file size in a single click directly in your browser.',
       toolSlug: 'image-compressor',
       toolName: 'Image Compressor',
     },

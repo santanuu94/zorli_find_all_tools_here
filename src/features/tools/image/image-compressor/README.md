@@ -2,34 +2,18 @@
 
 Isolated feature module for image compression in Zorli.
 
-## ⚠️ Status: NOT SHIPPED (`coming-soon`)
+## ✅ Status: PRODUCTION READY (`available`)
 
-The UI shell (upload, quality slider, results list, download button) exists, but
-**the processing engine does not**. `lib/compressor.ts` exports a `compressImage`
-that throws, because it previously returned the *original, uncompressed* file
-while reporting a fabricated reduction percentage.
+The Image Compressor is the first fully functional, production-quality tool on Zorli. It performs 100% browser-side image compression with zero external server dependencies, full privacy, and real Canvas/Blob re-encoding.
 
-Consequences, by design:
+### Architecture & Engine Highlights
 
-- The tool is **not** in the active registry, so it is never presented as available.
-- It has **no dynamic loader**, so its component is not bundled at all.
-- Opening its route shows the shared "not available yet" shell.
-- The route is excluded in `public/robots.txt`.
-
-### Engine contract — what "done" looks like
-
-`compressImage(file, settings)` must return `{ blob, reduction }` where:
-
-- `blob` is the genuinely re-encoded image (canvas + `toBlob`, or a WASM codec),
-- `reduction` is measured as `100 - (compressedBytes / originalBytes) * 100`, not derived
-  from the requested quality.
-
-Until that is true, the tool must stay out of
-`ACTIVE_IMAGE_TOOL_SLUGS` and `IMAGE_TOOL_LOADERS`
-(`src/features/tools/image/registry.ts` documents the three-step wiring).
-
-## Purpose
-Compress JPG, PNG, WebP, and AVIF image formats client-side to minimize file sizes for websites, forms, and email attachments.
+- **Native Canvas Re-encoding**: Decodes images into an offscreen canvas and re-encodes via `canvas.toBlob` at the requested quality level.
+- **Accurate Savings Engine**: Percentage savings are strictly calculated as `((originalSize - compressedSize) / originalSize) * 100`.
+- **"Already Optimized" Guard**: When compression would yield a larger file (such as on tiny already-optimized PNGs), the tool marks the file as "Already optimized" and preserves the smaller original file without making false savings claims.
+- **Batch Processing & ZIP Download**: Multi-file queue with sequential async yielding so the UI never blocks. Includes a zero-dependency standard PKZip generator (`lib/zip.ts`) to download all completed files in a single archive.
+- **Memory Safety**: Object URLs are tracked and automatically revoked on remove, queue clear, and component unmount.
+- **Code-Splitting**: Lazily imported via `IMAGE_TOOL_LOADERS` so it contributes 0 bytes to the initial homepage bundle.
 
 ## Directory Structure
 ```
@@ -43,11 +27,13 @@ image-compressor/
 │   ├── CompressionSettings.tsx
 │   ├── CompressionProgress.tsx
 │   ├── CompressionResult.tsx
+│   ├── PreviewModal.tsx
 │   └── DownloadButton.tsx
 ├── lib/
 │   ├── compressor.ts
 │   ├── image-processing.ts
-│   └── validation.ts
+│   ├── validation.ts
+│   └── zip.ts
 ├── hooks/
 │   └── useImageCompressor.ts
 ├── utils/
@@ -59,14 +45,15 @@ image-compressor/
 ```
 
 ## Supported Inputs
-- `image/jpeg`
-- `image/png`
-- `image/webp`
-- `image/avif`
+- `image/jpeg` (.jpg, .jpeg)
+- `image/png` (.png)
+- `image/webp` (.webp)
 - Max file size: 50MB per file
 
 ## Privacy Behavior
 Files are kept strictly inside the user's browser runtime. Zero images are transferred to remote servers.
 
 ## Testing Instructions
-Run tests with `npm test -- image-compressor`.
+Run tests with `npm test`.
+Run typecheck with `npm run lint`.
+Run production build with `npm run build`.

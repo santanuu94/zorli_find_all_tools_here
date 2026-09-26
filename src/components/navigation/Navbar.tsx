@@ -22,9 +22,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // rAF-throttled scroll listener: Navbar only needs to know scrolled/not.
-    // Unthrottled setState on every scroll pixel forces re-renders + style
-    // recalc in Chrome, especially on low-end/mobile devices.
     let ticking = false;
     const update = () => {
       ticking = false;
@@ -53,20 +50,21 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header
       className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#070B24]/90 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20 py-3'
+          ? 'bg-white/90 dark:bg-[#070B24]/90 backdrop-blur-xl border-b border-slate-200/80 dark:border-white/10 shadow-md shadow-slate-900/5 dark:shadow-black/20 py-3'
           : 'bg-transparent py-5'
       }`}
     >
       <div className="w-full max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-        {/* Left: Zorli Logo (Consistent Signature Dark Theme Across Both Modes) */}
+        {/* Left: Zorli Logo */}
         <button
           onClick={() => onNavigate('/')}
           className="focus:outline-none focus-visible:ring-2 focus-visible:ring-[#6657FF] rounded-lg cursor-pointer"
+          aria-label="Zorli homepage"
         >
-          <ZorliLogo theme="dark" size="md" />
+          <ZorliLogo theme={isDarkTheme ? 'dark' : 'light'} size="md" />
         </button>
 
-        {/* Center: Desktop Navigation Links (Consistent High-Contrast Styling) */}
+        {/* Center: Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => {
             const isActive =
@@ -80,8 +78,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => onNavigate(link.path)}
                 className={`text-sm font-medium transition-colors cursor-pointer ${
                   isActive
-                    ? 'text-white font-semibold'
-                    : 'text-slate-300 hover:text-white'
+                    ? 'text-slate-900 dark:text-white font-bold'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {link.label}
@@ -95,22 +93,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Quick Search Button */}
           <button
             onClick={onOpenSearch}
-            className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
+            className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer border border-slate-200 dark:border-white/10"
             title="Search tools (Cmd+K)"
             aria-label="Search tools"
           >
             <Search className="w-4 h-4" />
           </button>
 
-          {/* Theme Toggle Button (Toggles Page Mode Without Changing Navbar) */}
+          {/* Theme Toggle Button */}
           {onToggleTheme && (
             <button
               onClick={onToggleTheme}
-              className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all cursor-pointer border border-slate-200 dark:border-white/10 shadow-sm"
               title={`Switch to ${isDarkTheme ? 'light' : 'dark'} mode`}
-              aria-label="Toggle theme"
+              aria-label={`Switch to ${isDarkTheme ? 'light' : 'dark'} mode`}
             >
-              {isDarkTheme ? <Sun className="w-4 h-4 text-amber-300" /> : <Moon className="w-4 h-4 text-indigo-300" />}
+              {isDarkTheme ? (
+                <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform duration-300" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-600 hover:-rotate-12 transition-transform duration-300" />
+              )}
             </button>
           )}
 
@@ -129,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Mobile Menu Hamburger */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+            className="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -139,7 +141,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-[#0D1438]/98 backdrop-blur-2xl border-b border-white/15 px-6 py-6 animate-in slide-in-from-top duration-200 shadow-2xl">
+        <div className="md:hidden bg-white/98 dark:bg-[#0D1438]/98 backdrop-blur-2xl border-b border-slate-200 dark:border-white/15 px-6 py-6 animate-in slide-in-from-top duration-200 shadow-2xl">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <button
@@ -148,12 +150,36 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onNavigate(link.path);
                   setIsMobileMenuOpen(false);
                 }}
-                className="text-left py-2 text-base font-medium text-slate-200 hover:text-white transition-colors"
+                className="text-left py-2 text-base font-medium text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-colors"
               >
                 {link.label}
               </button>
             ))}
-            <div className="pt-4 border-t border-white/10 flex flex-col gap-3">
+
+            {/* Mobile Theme Toggle inside drawer */}
+            {onToggleTheme && (
+              <div className="pt-2 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Appearance</span>
+                <button
+                  onClick={onToggleTheme}
+                  className="px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-semibold bg-slate-100 dark:bg-white/10 text-slate-800 dark:text-slate-200"
+                >
+                  {isDarkTheme ? (
+                    <>
+                      <Sun className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Light Mode</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Dark Mode</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex flex-col gap-3">
               <Button
                 variant="primary"
                 size="md"

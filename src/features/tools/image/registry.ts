@@ -3,6 +3,7 @@ import { Tool } from '../../../types';
 // Import the config directly (not `./image-compressor`) so that the catalogue can
 // read metadata without ever pulling the tool's React component into a chunk.
 import { imageCompressorConfig } from './image-compressor/config';
+import { imageResizerConfig } from './image-resizer/config';
 
 /**
  * Lazy-loaders for SHIPPED image tools.
@@ -12,6 +13,7 @@ import { imageCompressorConfig } from './image-compressor/config';
  */
 export const IMAGE_TOOL_LOADERS: Record<string, () => Promise<ToolModule>> = {
   'image-compressor': () => import('./image-compressor'),
+  'image-resizer': () => import('./image-resizer'),
 };
 
 /**
@@ -22,7 +24,7 @@ export const IMAGE_TOOL_MODULES: ToolModule[] = [];
 /**
  * All catalogued image tools (available + upcoming).
  */
-export const ALL_IMAGE_TOOLS: Tool[] = [imageCompressorConfig];
+export const ALL_IMAGE_TOOLS: Tool[] = [imageCompressorConfig, imageResizerConfig];
 
 /**
  * Image tools that are coming in future phases.
@@ -40,7 +42,7 @@ export const IMAGE_FAMILY: ToolFamilyRegistry = {
  * Active tool slugs — the single source of truth for what is "live".
  * Only slugs listed here may be rendered as available.
  */
-export const ACTIVE_IMAGE_TOOL_SLUGS: string[] = ['image-compressor'];
+export const ACTIVE_IMAGE_TOOL_SLUGS: string[] = ['image-compressor', 'image-resizer'];
 
 /**
  * Metadata keys for active tools only. Consumed by the root registry to derive

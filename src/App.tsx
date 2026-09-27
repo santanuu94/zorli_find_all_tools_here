@@ -111,6 +111,10 @@ export default function App() {
           title = 'Image Compressor - Compress Images Online | Zorli';
           description =
             "Compress JPG, PNG and WebP images directly in your browser. Reduce image file size while keeping quality with Zorli's free image compressor.";
+        } else if (tool.slug === 'image-resizer') {
+          title = 'Image Resizer - Resize Images Online | Zorli';
+          description =
+            'Resize JPG, PNG and WebP images online directly in your browser. Change image dimensions, preserve aspect ratio, and download resized images with Zorli.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

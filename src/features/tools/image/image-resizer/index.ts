@@ -1,2 +1,3 @@
-export { metadata } from './metadata';
-export { ImageResizer as Component } from './ImageResizer';
+export * from './types';
+export * from './config';
+export { ImageResizer, ImageResizer as Component } from './components/ImageResizer';

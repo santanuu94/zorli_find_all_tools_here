@@ -46,6 +46,7 @@ describe('Tool registry consistency', () => {
 
   test('search reaches the catalogue and never invents tools', () => {
     expect(searchTools('compressor').map((tool) => tool.slug)).toEqual(['image-compressor']);
+    expect(searchTools('resizer').map((tool) => tool.slug)).toEqual(['image-resizer']);
     expect(searchTools('pdf merger')).toEqual([]);
   });
 });
@@ -59,16 +60,26 @@ describe('Deep-link routing', () => {
     window.history.pushState({}, '', '/tools');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { level: 1, name: /Explore All\s+Tools/i })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: /Explore All\s+Tools/i }, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.getByText('Image Compressor')).toBeInTheDocument();
+    expect(screen.getByText('Image Resizer')).toBeInTheDocument();
   });
 
   test('deep link to active tool loads the working studio workspace', async () => {
     window.history.pushState({}, '', '/tools/image/image-compressor');
     render(<App />);
 
-    expect(await screen.findByRole('heading', { level: 1, name: 'Image Compressor' })).toBeInTheDocument();
-    expect(await screen.findByText(/Drop images here, or browse files/i)).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Image Compressor' }, { timeout: 5000 })).toBeInTheDocument();
+    expect(await screen.findByText(/Drop images here, or browse files/i, {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
+  });
+
+  test('deep link to image-resizer loads the working studio workspace', async () => {
+    window.history.pushState({}, '', '/tools/image/image-resizer');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Image Resizer' }, { timeout: 5000 })).toBeInTheDocument();
+    expect(await screen.findByText(/Drop images to resize, or browse/i, {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
   });
 

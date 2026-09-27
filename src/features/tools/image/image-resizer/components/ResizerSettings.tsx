@@ -14,7 +14,13 @@ import {
   Info,
   ChevronDown,
 } from 'lucide-react';
-import { ResizeMode, ResizeSettings, ResizedImageItem } from '../types';
+import {
+  ResizeMode,
+  ResizeSettings,
+  ResizedImageItem,
+  PresetFitMode,
+  CanvasBackground,
+} from '../types';
 import { PRESET_DIMENSIONS, SOCIAL_PLATFORMS } from '../lib/resizer';
 
 interface ResizerSettingsProps {
@@ -28,7 +34,8 @@ interface ResizerSettingsProps {
   onToggleLockRatio: () => void;
   onPercentageChange: (percentage: number) => void;
   onPresetChange: (presetId: string) => void;
-  onPresetFitModeChange: (fitMode: 'fit' | 'stretch') => void;
+  onPresetFitModeChange: (fitMode: PresetFitMode) => void;
+  onCanvasBackgroundChange?: (bg: CanvasBackground) => void;
   onToggleDontEnlarge: () => void;
   onQualityChange: (quality: number) => void;
   onResizeClick: () => void;
@@ -49,6 +56,7 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
   onPercentageChange,
   onPresetChange,
   onPresetFitModeChange,
+  onCanvasBackgroundChange,
   onToggleDontEnlarge,
   onQualityChange,
   onResizeClick,
@@ -58,6 +66,21 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
 }) => {
   const [showOverride, setShowOverride] = useState(false);
   const percentageOptions = [25, 50, 75, 100, 125, 150];
+
+  const [customWidthInput, setCustomWidthInput] = useState<string>(
+    settings.customWidth ? String(settings.customWidth) : ''
+  );
+  const [customHeightInput, setCustomHeightInput] = useState<string>(
+    settings.customHeight ? String(settings.customHeight) : ''
+  );
+
+  React.useEffect(() => {
+    setCustomWidthInput(settings.customWidth ? String(settings.customWidth) : '');
+  }, [settings.customWidth]);
+
+  React.useEffect(() => {
+    setCustomHeightInput(settings.customHeight ? String(settings.customHeight) : '');
+  }, [settings.customHeight]);
 
   const socialPresets = PRESET_DIMENSIONS.filter((p) => p.category === 'social');
   const webPresets = PRESET_DIMENSIONS.filter(
@@ -76,6 +99,11 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
   const currentPreset =
     currentPlatform.presets.find((p) => p.id === settings.presetId) ||
     currentPlatform.presets[0];
+
+  const currentWebPreset =
+    webPresets.find((p) => p.id === settings.presetId) ||
+    PRESET_DIMENSIONS.find((p) => p.id === settings.presetId) ||
+    webPresets[0];
 
   return (
     <div className="p-5 sm:p-6 rounded-3xl bg-slate-50 dark:bg-white/[0.03] border border-slate-200/80 dark:border-white/10 space-y-6">
@@ -240,8 +268,24 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
                   min="1"
                   max="16384"
                   disabled={disabled}
-                  value={settings.customWidth || ''}
-                  onChange={(e) => onWidthChange(Number(e.target.value))}
+                  value={customWidthInput}
+                  placeholder="Width"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCustomWidthInput(val);
+                    const num = parseInt(val, 10);
+                    if (!isNaN(num) && num > 0) {
+                      onWidthChange(num);
+                    }
+                  }}
+                  onBlur={() => {
+                    const num = parseInt(customWidthInput, 10);
+                    if (isNaN(num) || num <= 0) {
+                      const fallback = primaryFile?.originalWidth || settings.customWidth || 1200;
+                      setCustomWidthInput(String(fallback));
+                      onWidthChange(fallback);
+                    }
+                  }}
                   className="w-full text-xs font-mono font-bold rounded-xl bg-white dark:bg-[#070B24] border border-slate-200 dark:border-white/10 px-3 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -258,8 +302,24 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
                   min="1"
                   max="16384"
                   disabled={disabled}
-                  value={settings.customHeight || ''}
-                  onChange={(e) => onHeightChange(Number(e.target.value))}
+                  value={customHeightInput}
+                  placeholder="Height"
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setCustomHeightInput(val);
+                    const num = parseInt(val, 10);
+                    if (!isNaN(num) && num > 0) {
+                      onHeightChange(num);
+                    }
+                  }}
+                  onBlur={() => {
+                    const num = parseInt(customHeightInput, 10);
+                    if (isNaN(num) || num <= 0) {
+                      const fallback = primaryFile?.originalHeight || settings.customHeight || 900;
+                      setCustomHeightInput(String(fallback));
+                      onHeightChange(fallback);
+                    }
+                  }}
                   className="w-full text-xs font-mono font-bold rounded-xl bg-white dark:bg-[#070B24] border border-slate-200 dark:border-white/10 px-3 py-2.5 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -484,11 +544,27 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
                       </label>
                       <input
                         type="number"
-                        min="10"
+                        min="1"
                         max="16384"
                         disabled={disabled}
-                        value={settings.customWidth || currentPreset.width}
-                        onChange={(e) => onWidthChange(Number(e.target.value))}
+                        value={customWidthInput}
+                        placeholder="Width"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomWidthInput(val);
+                          const num = parseInt(val, 10);
+                          if (!isNaN(num) && num > 0) {
+                            onWidthChange(num);
+                          }
+                        }}
+                        onBlur={() => {
+                          const num = parseInt(customWidthInput, 10);
+                          if (isNaN(num) || num <= 0) {
+                            const fallback = currentPreset.width;
+                            setCustomWidthInput(String(fallback));
+                            onWidthChange(fallback);
+                          }
+                        }}
                         className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
                       />
                     </div>
@@ -498,11 +574,27 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
                       </label>
                       <input
                         type="number"
-                        min="10"
+                        min="1"
                         max="16384"
                         disabled={disabled}
-                        value={settings.customHeight || currentPreset.height}
-                        onChange={(e) => onHeightChange(Number(e.target.value))}
+                        value={customHeightInput}
+                        placeholder="Height"
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setCustomHeightInput(val);
+                          const num = parseInt(val, 10);
+                          if (!isNaN(num) && num > 0) {
+                            onHeightChange(num);
+                          }
+                        }}
+                        onBlur={() => {
+                          const num = parseInt(customHeightInput, 10);
+                          if (isNaN(num) || num <= 0) {
+                            const fallback = currentPreset.height;
+                            setCustomHeightInput(String(fallback));
+                            onHeightChange(fallback);
+                          }
+                        }}
                         className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white focus:ring-1 focus:ring-emerald-500"
                       />
                     </div>
@@ -538,56 +630,106 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
               )}
             </div>
 
-            {/* 5. Framing & Proportions: Fit vs Stretch */}
-            <div className="pt-2 border-t border-slate-200/80 dark:border-white/10 space-y-2">
+            {/* 5. Framing & Proportions: Fit vs Fill vs Stretch */}
+            <div className="pt-2 border-t border-slate-200/80 dark:border-white/10 space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                  Framing & Proportions
+                  Framing & Canvas Fit
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                  Zero silent crops
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                  {currentPreset.width} × {currentPreset.height} ({currentPreset.aspectRatioLabel})
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-1.5">
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onPresetFitModeChange('fit')}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
                     settings.presetFitMode === 'fit'
                       ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-500'
                       : 'bg-white dark:bg-[#070B24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400'
                   }`}
                 >
-                  <span className="text-xs font-bold block">Fit Proportionally</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                    No distortion (recommended)
+                  <span className="text-xs font-bold block">Fit (Padded)</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 leading-tight">
+                    Full image, zero crop
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onPresetFitModeChange('fill')}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    settings.presetFitMode === 'fill'
+                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-500'
+                      : 'bg-white dark:bg-[#070B24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  <span className="text-xs font-bold block">Fill Canvas</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 leading-tight">
+                    Full-bleed (crop)
                   </span>
                 </button>
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onPresetFitModeChange('stretch')}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
                     settings.presetFitMode === 'stretch'
                       ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-500'
                       : 'bg-white dark:bg-[#070B24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400'
                   }`}
                 >
-                  <span className="text-xs font-bold block">Exact Stretch</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                    Forces canvas dimensions
+                  <span className="text-xs font-bold block">Stretch</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 leading-tight">
+                    Distort to fit
                   </span>
                 </button>
               </div>
 
+              {/* Background style options when in Fit mode */}
+              {settings.presetFitMode === 'fit' && onCanvasBackgroundChange && (
+                <div className="p-2.5 rounded-xl bg-slate-100/60 dark:bg-white/5 space-y-1.5">
+                  <span className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Canvas Padding Background
+                  </span>
+                  <div className="grid grid-cols-4 gap-1">
+                    {(
+                      [
+                        { id: 'blur', label: 'Blur' },
+                        { id: 'black', label: 'Black' },
+                        { id: 'white', label: 'White' },
+                        { id: 'transparent', label: 'Clear' },
+                      ] as const
+                    ).map((bg) => (
+                      <button
+                        key={bg.id}
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => onCanvasBackgroundChange(bg.id)}
+                        className={`py-1 px-1.5 rounded-lg text-[11px] font-medium transition-all cursor-pointer text-center ${
+                          (settings.canvasBackground || 'blur') === bg.id
+                            ? 'bg-emerald-500 text-white shadow-xs font-bold'
+                            : 'bg-white dark:bg-[#070B24] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-slate-300'
+                        }`}
+                      >
+                        {bg.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {primaryFile && primaryFile.originalWidth > 0 && (
                 <div className="p-2.5 rounded-xl bg-slate-100/80 dark:bg-white/5 text-[11px] text-slate-600 dark:text-slate-400 flex items-start gap-2">
-                  <Info className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
+                  <Info className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                   <span>
                     {settings.presetFitMode === 'fit'
-                      ? `Your image (${primaryFile.originalWidth} × ${primaryFile.originalHeight}) will scale to fit inside the ${currentPreset.width} × ${currentPreset.height} boundary without distortion or cropping.`
-                      : `Your image will stretch to exactly ${currentPreset.width} × ${currentPreset.height}. Non-matching aspect ratios will be stretched.`}
+                      ? `Your image (${primaryFile.originalWidth} × ${primaryFile.originalHeight}) will be placed centered on an exact ${currentPreset.width} × ${currentPreset.height} (${currentPreset.aspectRatioLabel}) canvas with ${settings.canvasBackground || 'blur'} background padding.`
+                      : settings.presetFitMode === 'fill'
+                      ? `Your image will zoom to fill the entire ${currentPreset.width} × ${currentPreset.height} (${currentPreset.aspectRatioLabel}) canvas with no bars (center-cropped).`
+                      : `Your image will stretch to exactly ${currentPreset.width} × ${currentPreset.height} (${currentPreset.aspectRatioLabel}).`}
                   </span>
                 </div>
               )}
@@ -640,43 +782,109 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
               })}
             </div>
 
-            {/* Distinguish Resize vs Crop: Fit vs Stretch */}
-            <div className="pt-2 border-t border-slate-200/80 dark:border-white/10 space-y-1.5">
-              <span className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                Framing & Proportions
-              </span>
-              <div className="grid grid-cols-2 gap-2">
+            {/* Framing & Proportions: Fit vs Fill vs Stretch */}
+            <div className="pt-2 border-t border-slate-200/80 dark:border-white/10 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                  Framing & Canvas Fit
+                </span>
+                <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                  {currentWebPreset.width} × {currentWebPreset.height} ({currentWebPreset.aspectRatioLabel || 'Standard'})
+                </span>
+              </div>
+              <div className="grid grid-cols-3 gap-1.5">
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onPresetFitModeChange('fit')}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
                     settings.presetFitMode === 'fit'
-                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200'
+                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-500'
                       : 'bg-white dark:bg-[#070B24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400'
                   }`}
                 >
-                  <span className="text-xs font-bold block">Fit (Proportional)</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                    No distortion (recommended)
+                  <span className="text-xs font-bold block">Fit (Padded)</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 leading-tight">
+                    Full image, zero crop
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onPresetFitModeChange('fill')}
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                    settings.presetFitMode === 'fill'
+                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-500'
+                      : 'bg-white dark:bg-[#070B24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  <span className="text-xs font-bold block">Fill Canvas</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 leading-tight">
+                    Full-bleed (crop)
                   </span>
                 </button>
                 <button
                   type="button"
                   disabled={disabled}
                   onClick={() => onPresetFitModeChange('stretch')}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
                     settings.presetFitMode === 'stretch'
-                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200'
+                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-500'
                       : 'bg-white dark:bg-[#070B24] border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400'
                   }`}
                 >
-                  <span className="text-xs font-bold block">Exact Stretch</span>
-                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                    Forces canvas dimensions
+                  <span className="text-xs font-bold block">Stretch</span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5 leading-tight">
+                    Distort to fit
                   </span>
                 </button>
               </div>
+
+              {/* Background style options when in Fit mode */}
+              {settings.presetFitMode === 'fit' && onCanvasBackgroundChange && (
+                <div className="p-2.5 rounded-xl bg-slate-100/60 dark:bg-white/5 space-y-1.5">
+                  <span className="block text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    Canvas Padding Background
+                  </span>
+                  <div className="grid grid-cols-4 gap-1">
+                    {(
+                      [
+                        { id: 'blur', label: 'Blur' },
+                        { id: 'black', label: 'Black' },
+                        { id: 'white', label: 'White' },
+                        { id: 'transparent', label: 'Clear' },
+                      ] as const
+                    ).map((bg) => (
+                      <button
+                        key={bg.id}
+                        type="button"
+                        disabled={disabled}
+                        onClick={() => onCanvasBackgroundChange(bg.id)}
+                        className={`py-1 px-1.5 rounded-lg text-[11px] font-medium transition-all cursor-pointer text-center ${
+                          (settings.canvasBackground || 'blur') === bg.id
+                            ? 'bg-emerald-500 text-white shadow-xs font-bold'
+                            : 'bg-white dark:bg-[#070B24] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:border-slate-300'
+                        }`}
+                      >
+                        {bg.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {primaryFile && primaryFile.originalWidth > 0 && (
+                <div className="p-2.5 rounded-xl bg-slate-100/80 dark:bg-white/5 text-[11px] text-slate-600 dark:text-slate-400 flex items-start gap-2">
+                  <Info className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                  <span>
+                    {settings.presetFitMode === 'fit'
+                      ? `Your image (${primaryFile.originalWidth} × ${primaryFile.originalHeight}) will be placed centered on an exact ${currentWebPreset.width} × ${currentWebPreset.height} canvas with ${settings.canvasBackground || 'blur'} background padding.`
+                      : settings.presetFitMode === 'fill'
+                      ? `Your image will zoom to fill the entire ${currentWebPreset.width} × ${currentWebPreset.height} canvas with no bars (center-cropped).`
+                      : `Your image will stretch to exactly ${currentWebPreset.width} × ${currentWebPreset.height}.`}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -718,6 +926,10 @@ export const ResizerSettingsComponent: React.FC<ResizerSettingsProps> = ({
                 ? `${settings.customWidth} × ${settings.customHeight} px`
                 : activeMode === 'social'
                 ? `${currentPreset.width} × ${currentPreset.height} px`
+                : activeMode === 'web'
+                ? `${currentWebPreset.width} × ${currentWebPreset.height} px`
+                : activeMode === 'percentage'
+                ? `${settings.percentage}% Scale`
                 : 'Select options'}
             </span>
           </div>

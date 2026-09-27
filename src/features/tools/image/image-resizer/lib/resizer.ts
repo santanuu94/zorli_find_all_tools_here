@@ -1,4 +1,10 @@
-import { PresetDimension, ResizeSettings, SocialPlatform } from '../types';
+import {
+  CanvasBackground,
+  PresetDimension,
+  PresetFitMode,
+  ResizeSettings,
+  SocialPlatform,
+} from '../types';
 
 export const SOCIAL_PLATFORMS: SocialPlatform[] = [
   {
@@ -469,32 +475,26 @@ export function calculateTargetDimensions(
     const boundsH =
       settings.manualOverride && settings.customHeight ? settings.customHeight : preset.height;
 
-    const isFit =
-      settings.presetFitMode === 'fit' ||
-      (settings.presetFitMode === undefined && settings.lockAspectRatio !== false);
-
-    if (isFit) {
-      // Fit proportionally within preset bounds (contain)
+    if (settings.mode === 'social' || settings.mode === 'web') {
+      // Social & Web formats are explicit target canvas dimensions (e.g. 1080x1920 for 9:16 Reel)
+      targetWidth = boundsW;
+      targetHeight = boundsH;
+    } else if (settings.mode === 'preset' && settings.lockAspectRatio && settings.presetFitMode === 'fit') {
+      // Proportional box fitting for generic display presets
       const scaleW = boundsW / origW;
       const scaleH = boundsH / origH;
       const fitScale = Math.min(scaleW, scaleH);
 
       targetWidth = Math.max(1, Math.round(origW * fitScale));
       targetHeight = Math.max(1, Math.round(origH * fitScale));
-
-      if (settings.dontEnlarge && (targetWidth > origW || targetHeight > origH)) {
-        targetWidth = origW;
-        targetHeight = origH;
-      }
     } else {
-      // Freeform stretch to preset dimensions
       targetWidth = boundsW;
       targetHeight = boundsH;
+    }
 
-      if (settings.dontEnlarge) {
-        targetWidth = Math.min(targetWidth, origW);
-        targetHeight = Math.min(targetHeight, origH);
-      }
+    if (settings.dontEnlarge && (targetWidth > origW || targetHeight > origH)) {
+      targetWidth = Math.min(targetWidth, origW);
+      targetHeight = Math.min(targetHeight, origH);
     }
   } else {
     // Mode: 'custom'
@@ -597,14 +597,20 @@ export function getOutputMimeType(originalType: string, originalName: string): s
 
 /**
  * Resizes an image file or blob to the exact target dimensions using an HTML5 Canvas.
+ * Supports fit (contain with ambient blur or solid canvas padding), fill (cover/center-crop), and stretch.
  */
 export async function resizeImageFile(
   file: File | Blob,
   targetWidth: number,
   targetHeight: number,
-  qualityPercentage = 90
+  qualityPercentage = 90,
+  fitMode: PresetFitMode = 'fit',
+  backgroundStyle: CanvasBackground = 'blur'
 ): Promise<{ blob: Blob; mimeType: string; width: number; height: number }> {
   const img = await loadImageElement(file);
+
+  const origW = img.naturalWidth || img.width || 1;
+  const origH = img.naturalHeight || img.height || 1;
 
   const w = Math.max(1, Math.round(targetWidth));
   const h = Math.max(1, Math.round(targetHeight));
@@ -626,13 +632,69 @@ export async function resizeImageFile(
   const origName = file instanceof File ? file.name : '';
   const mimeType = getOutputMimeType(origType, origName);
 
-  // If saving to JPEG, fill canvas with white first to avoid black backgrounds behind transparent pixels
-  if (mimeType === 'image/jpeg') {
-    ctx.fillStyle = '#FFFFFF';
-    ctx.fillRect(0, 0, w, h);
-  }
+  if (fitMode === 'fill') {
+    // Fill / Cover: crop to fill the entire target canvas
+    const scale = Math.max(w / origW, h / origH);
+    const renderW = Math.round(origW * scale);
+    const renderH = Math.round(origH * scale);
+    const offsetX = Math.round((w - renderW) / 2);
+    const offsetY = Math.round((h - renderH) / 2);
 
-  ctx.drawImage(img, 0, 0, w, h);
+    if (mimeType === 'image/jpeg') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    ctx.drawImage(img, offsetX, offsetY, renderW, renderH);
+  } else if (fitMode === 'stretch') {
+    // Stretch to exact dimensions
+    if (mimeType === 'image/jpeg') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+    }
+    ctx.drawImage(img, 0, 0, w, h);
+  } else {
+    // fitMode === 'fit': Fit with canvas padding
+    const scale = Math.min(w / origW, h / origH);
+    const renderW = Math.round(origW * scale);
+    const renderH = Math.round(origH * scale);
+    const offsetX = Math.round((w - renderW) / 2);
+    const offsetY = Math.round((h - renderH) / 2);
+
+    // If the image doesn't fill the canvas completely, render background
+    if (renderW < w || renderH < h) {
+      if (backgroundStyle === 'blur') {
+        ctx.save();
+        // Draw zoomed blurred image in background
+        ctx.filter = 'blur(40px) brightness(0.65)';
+        const bgScale = Math.max(w / origW, h / origH) * 1.15;
+        const bgW = Math.round(origW * bgScale);
+        const bgH = Math.round(origH * bgScale);
+        const bgX = Math.round((w - bgW) / 2);
+        const bgY = Math.round((h - bgH) / 2);
+        ctx.drawImage(img, bgX, bgY, bgW, bgH);
+        ctx.restore();
+      } else if (backgroundStyle === 'black') {
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, w, h);
+      } else if (backgroundStyle === 'white') {
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, w, h);
+      } else {
+        // transparent
+        if (mimeType === 'image/jpeg') {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, w, h);
+        }
+      }
+    } else if (mimeType === 'image/jpeg') {
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    // Render centered crisp image
+    ctx.drawImage(img, offsetX, offsetY, renderW, renderH);
+  }
 
   const quality = Math.max(0.1, Math.min(1.0, qualityPercentage / 100));
 

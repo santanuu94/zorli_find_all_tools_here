@@ -2,7 +2,9 @@ export type ResizeMode = 'custom' | 'percentage' | 'social' | 'web' | 'preset';
 
 export type PresetCategory = 'social' | 'web' | 'common';
 
-export type PresetFitMode = 'fit' | 'stretch';
+export type PresetFitMode = 'fit' | 'fill' | 'stretch';
+
+export type CanvasBackground = 'blur' | 'black' | 'white' | 'transparent';
 
 export interface PresetDimension {
   id: string;
@@ -41,6 +43,7 @@ export interface ResizeSettings {
   presetId: string;
   socialPlatformId?: string;
   presetFitMode: PresetFitMode;
+  canvasBackground?: CanvasBackground;
   manualOverride?: boolean;
   dontEnlarge: boolean;
   quality: number; // 1-100 for JPEG/WebP

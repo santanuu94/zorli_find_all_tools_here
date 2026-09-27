@@ -1,5 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ResizedImageItem, ResizeSettings, ResizeMode } from '../types';
+import {
+  ResizedImageItem,
+  ResizeSettings,
+  ResizeMode,
+  PresetFitMode,
+  CanvasBackground,
+} from '../types';
 import {
   calculateTargetDimensions,
   generateResizedFilename,
@@ -22,6 +28,7 @@ export function useImageResizer() {
     presetId: 'youtube-thumbnail',
     socialPlatformId: 'youtube',
     presetFitMode: 'fit',
+    canvasBackground: 'blur',
     dontEnlarge: false,
     quality: 90,
   });
@@ -66,11 +73,11 @@ export function useImageResizer() {
     };
   }, []);
 
-  // Re-calculate target dimensions for all pending/ready files whenever settings change
+  // Re-calculate target dimensions for all files whenever settings change
   useEffect(() => {
     setFiles((prevFiles) =>
       prevFiles.map((item) => {
-        if (item.status === 'done' || item.status === 'error') {
+        if (item.status === 'error') {
           return item;
         }
         const { targetWidth, targetHeight } = calculateTargetDimensions(
@@ -245,10 +252,19 @@ export function useImageResizer() {
           customWidth: presetObj ? presetObj.width : s.customWidth,
           customHeight: presetObj ? presetObj.height : s.customHeight,
         };
+      } else if (mode === 'custom') {
+        const defaultW = files[0]?.originalWidth || s.customWidth || 1200;
+        const defaultH = files[0]?.originalHeight || s.customHeight || 900;
+        return {
+          ...s,
+          mode,
+          customWidth: s.manualOverride ? s.customWidth : defaultW,
+          customHeight: s.manualOverride ? s.customHeight : defaultH,
+        };
       }
       return { ...s, mode };
     });
-  }, []);
+  }, [files]);
 
   const updateSocialPlatform = useCallback((platformId: string) => {
     const platform =
@@ -264,40 +280,68 @@ export function useImageResizer() {
     }));
   }, []);
 
-  const updatePresetFitMode = useCallback((fitMode: 'fit' | 'stretch') => {
+  const updatePresetFitMode = useCallback((fitMode: PresetFitMode) => {
     setSettings((s) => ({ ...s, presetFitMode: fitMode }));
   }, []);
 
-  const updateCustomWidth = useCallback((val: number) => {
-    const w = Math.max(1, Math.round(val));
-    setSettings((s) => ({
-      ...s,
-      customWidth: w,
-      manualOverride: true,
-      primaryDimension: 'width',
-      // If locked and there is a reference ratio, update height too
-      customHeight: s.lockAspectRatio
-        ? Math.max(1, Math.round(w / (s.customWidth / (s.customHeight || 1))))
-        : s.customHeight,
-    }));
+  const updateCanvasBackground = useCallback((canvasBackground: CanvasBackground) => {
+    setSettings((s) => ({ ...s, canvasBackground }));
   }, []);
+
+  const updateCustomWidth = useCallback((val: number) => {
+    if (isNaN(val) || val <= 0) return;
+    const w = Math.round(val);
+    setSettings((s) => {
+      let ratio = files[0]?.aspectRatio;
+      if (!ratio || isNaN(ratio)) {
+        ratio = s.customWidth && s.customHeight ? s.customWidth / s.customHeight : 4 / 3;
+      }
+      return {
+        ...s,
+        customWidth: w,
+        manualOverride: true,
+        primaryDimension: 'width',
+        customHeight: s.lockAspectRatio
+          ? Math.max(1, Math.round(w / ratio))
+          : s.customHeight,
+      };
+    });
+  }, [files]);
 
   const updateCustomHeight = useCallback((val: number) => {
-    const h = Math.max(1, Math.round(val));
-    setSettings((s) => ({
-      ...s,
-      customHeight: h,
-      manualOverride: true,
-      primaryDimension: 'height',
-      customWidth: s.lockAspectRatio
-        ? Math.max(1, Math.round(h * ((s.customWidth || 1) / (s.customHeight || 1))))
-        : s.customWidth,
-    }));
-  }, []);
+    if (isNaN(val) || val <= 0) return;
+    const h = Math.round(val);
+    setSettings((s) => {
+      let ratio = files[0]?.aspectRatio;
+      if (!ratio || isNaN(ratio)) {
+        ratio = s.customWidth && s.customHeight ? s.customWidth / s.customHeight : 4 / 3;
+      }
+      return {
+        ...s,
+        customHeight: h,
+        manualOverride: true,
+        primaryDimension: 'height',
+        customWidth: s.lockAspectRatio
+          ? Math.max(1, Math.round(h * ratio))
+          : s.customWidth,
+      };
+    });
+  }, [files]);
 
   const toggleLockRatio = useCallback(() => {
-    setSettings((s) => ({ ...s, lockAspectRatio: !s.lockAspectRatio }));
-  }, []);
+    setSettings((s) => {
+      const nextLock = !s.lockAspectRatio;
+      if (nextLock) {
+        const ratio = files[0]?.aspectRatio || (s.customWidth / (s.customHeight || 1));
+        return {
+          ...s,
+          lockAspectRatio: nextLock,
+          customHeight: Math.max(1, Math.round(s.customWidth / ratio)),
+        };
+      }
+      return { ...s, lockAspectRatio: nextLock };
+    });
+  }, [files]);
 
   const updatePercentage = useCallback((percentage: number) => {
     setSettings((s) => ({ ...s, percentage }));
@@ -339,6 +383,11 @@ export function useImageResizer() {
 
     setIsProcessing(true);
 
+    const fitModeToUse: PresetFitMode =
+      settings.mode === 'social' || settings.mode === 'web'
+        ? settings.presetFitMode
+        : 'stretch';
+
     for (const item of itemsToProcess) {
       // Mark as processing
       setFiles((prev) =>
@@ -356,7 +405,9 @@ export function useImageResizer() {
           item.file,
           targetWidth,
           targetHeight,
-          settings.quality
+          settings.quality,
+          fitModeToUse,
+          settings.canvasBackground || 'blur'
         );
 
         // Revoke previous output URL if re-resizing
@@ -460,6 +511,7 @@ export function useImageResizer() {
     updatePercentage,
     updatePreset,
     updatePresetFitMode,
+    updateCanvasBackground,
     toggleDontEnlarge,
     updateQuality,
     files,

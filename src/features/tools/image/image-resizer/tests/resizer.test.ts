@@ -111,7 +111,7 @@ describe('Image Resizer Math & Logic', () => {
     expect(result.targetHeight).toBe(1080);
   });
 
-  test('Social Media mode: Instagram Post (1080x1080) with fit preserves proportion without distortion', () => {
+  test('Social Media mode: Instagram Post (1080x1080) targets exact 1080x1080 social canvas', () => {
     // 4000x3000 (4:3) into 1080x1080 square
     const fitResult = calculateTargetDimensions(4000, 3000, {
       ...defaultSettings,
@@ -120,9 +120,9 @@ describe('Image Resizer Math & Logic', () => {
       presetFitMode: 'fit',
     });
 
-    // Fit inside 1080x1080: width = 1080, height = 1080 / (4/3) = 810
+    // Exact 1080x1080 square canvas for Instagram
     expect(fitResult.targetWidth).toBe(1080);
-    expect(fitResult.targetHeight).toBe(810);
+    expect(fitResult.targetHeight).toBe(1080);
 
     // Stretch forces exact 1080x1080 canvas
     const stretchResult = calculateTargetDimensions(4000, 3000, {
@@ -134,6 +134,19 @@ describe('Image Resizer Math & Logic', () => {
 
     expect(stretchResult.targetWidth).toBe(1080);
     expect(stretchResult.targetHeight).toBe(1080);
+  });
+
+  test('16:9 image into 9:16 Instagram Reel yields exact 1080x1920 vertical canvas', () => {
+    // 1920x1080 (16:9) into Instagram Reel (1080x1920, 9:16)
+    const reelResult = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'social',
+      presetId: 'instagram-reel',
+      presetFitMode: 'fit',
+    });
+
+    expect(reelResult.targetWidth).toBe(1080);
+    expect(reelResult.targetHeight).toBe(1920);
   });
 
   test('Web mode: Website Hero (1600x900) calculates correctly', () => {
@@ -301,4 +314,82 @@ describe('Image Resizer Math & Logic', () => {
     expect(overrideResult.targetWidth).toBe(1000);
     expect(overrideResult.targetHeight).toBe(600);
   });
+
+  test('Web & Display mode: All core web presets return exact canvas dimensions', () => {
+    const webHero = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'web',
+      presetId: 'web-hero',
+    });
+    expect(webHero.targetWidth).toBe(1600);
+    expect(webHero.targetHeight).toBe(900);
+
+    const webBanner = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'web',
+      presetId: 'web-banner',
+    });
+    expect(webBanner.targetWidth).toBe(1200);
+    expect(webBanner.targetHeight).toBe(675);
+
+    const blogImage = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'web',
+      presetId: 'web-blog-image',
+    });
+    expect(blogImage.targetWidth).toBe(1200);
+    expect(blogImage.targetHeight).toBe(630);
+
+    const blogThumb = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'web',
+      presetId: 'web-blog-thumb',
+    });
+    expect(blogThumb.targetWidth).toBe(600);
+    expect(blogThumb.targetHeight).toBe(400);
+
+    const common1080 = calculateTargetDimensions(4000, 3000, {
+      ...defaultSettings,
+      mode: 'web',
+      presetId: 'common-1080p',
+    });
+    expect(common1080.targetWidth).toBe(1920);
+    expect(common1080.targetHeight).toBe(1080);
+  });
+
+  test('Exact Pixels mode: preserves exact custom width and height without letterbox distortion', () => {
+    // Unlocked freeform
+    const freeform = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'custom',
+      customWidth: 800,
+      customHeight: 600,
+      lockAspectRatio: false,
+    });
+    expect(freeform.targetWidth).toBe(800);
+    expect(freeform.targetHeight).toBe(600);
+
+    // Locked aspect ratio from width
+    const lockedWidth = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'custom',
+      customWidth: 960,
+      primaryDimension: 'width',
+      lockAspectRatio: true,
+    });
+    expect(lockedWidth.targetWidth).toBe(960);
+    expect(lockedWidth.targetHeight).toBe(540);
+
+    // Locked aspect ratio from height
+    const lockedHeight = calculateTargetDimensions(1920, 1080, {
+      ...defaultSettings,
+      mode: 'custom',
+      customHeight: 540,
+      primaryDimension: 'height',
+      lockAspectRatio: true,
+    });
+    expect(lockedHeight.targetWidth).toBe(960);
+    expect(lockedHeight.targetHeight).toBe(540);
+  });
 });
+

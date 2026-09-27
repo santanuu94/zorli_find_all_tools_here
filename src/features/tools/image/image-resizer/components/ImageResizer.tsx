@@ -21,6 +21,7 @@ export const ImageResizer: React.FC<ToolComponentProps> = () => {
     updatePercentage,
     updatePreset,
     updatePresetFitMode,
+    updateCanvasBackground,
     toggleDontEnlarge,
     updateQuality,
     files,
@@ -35,8 +36,19 @@ export const ImageResizer: React.FC<ToolComponentProps> = () => {
     setPreviewItem,
   } = useImageResizer();
 
-  const completedFiles = files.filter((f) => f.status === 'done' && f.outputBlob);
-  const pendingFiles = files.filter((f) => f.status === 'pending');
+  const completedFiles = files.filter(
+    (f) =>
+      f.status === 'done' &&
+      f.outputBlob &&
+      f.targetWidth === f.outputWidth &&
+      f.targetHeight === f.outputHeight
+  );
+  const pendingFiles = files.filter(
+    (f) =>
+      f.status === 'pending' ||
+      (f.status === 'done' &&
+        (f.targetWidth !== f.outputWidth || f.targetHeight !== f.outputHeight))
+  );
   const hasFilesToResize = files.some((f) => f.status !== 'error' && f.file);
 
   const currentPlatform =
@@ -68,6 +80,7 @@ export const ImageResizer: React.FC<ToolComponentProps> = () => {
               onPercentageChange={updatePercentage}
               onPresetChange={updatePreset}
               onPresetFitModeChange={updatePresetFitMode}
+              onCanvasBackgroundChange={updateCanvasBackground}
               onToggleDontEnlarge={toggleDontEnlarge}
               onQualityChange={updateQuality}
               onResizeClick={startResizing}

@@ -115,6 +115,10 @@ export default function App() {
           title = 'Image Resizer - Resize Images Online | Zorli';
           description =
             'Resize JPG, PNG and WebP images online directly in your browser. Change image dimensions, preserve aspect ratio, and download resized images with Zorli.';
+        } else if (tool.slug === 'image-converter') {
+          title = 'Image Converter - Convert JPG, PNG & WebP Online | Zorli';
+          description =
+            'Convert JPG, PNG and WebP images online with Zorli. Choose your output format, adjust quality when available, and download your converted images.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

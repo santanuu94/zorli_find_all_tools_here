@@ -49,6 +49,7 @@ describe('Tool registry consistency', () => {
     expect(searchTools('resizer').map((tool) => tool.slug)).toEqual(['image-resizer']);
     expect(searchTools('converter').map((tool) => tool.slug)).toEqual(['image-converter']);
     expect(searchTools('cropper').map((tool) => tool.slug)).toEqual(['image-cropper']);
+    expect(searchTools('metadata').map((tool) => tool.slug)).toEqual(['image-metadata-cleaner']);
     expect(searchTools('pdf merger')).toEqual([]);
   });
 });
@@ -67,6 +68,7 @@ describe('Deep-link routing', () => {
     expect(screen.getByText('Image Resizer')).toBeInTheDocument();
     expect(screen.getByText('Image Converter')).toBeInTheDocument();
     expect(screen.getByText('Image Cropper')).toBeInTheDocument();
+    expect(screen.getByText('Image Metadata Cleaner')).toBeInTheDocument();
   });
 
   test('deep link to active tool loads the working studio workspace', async () => {
@@ -102,6 +104,15 @@ describe('Deep-link routing', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Image Cropper' }, { timeout: 5000 })).toBeInTheDocument();
     expect(await screen.findByText(/Drop images to crop, or browse/i, {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
+  });
+
+  test('deep link to image-metadata-cleaner loads the working studio workspace', async () => {
+    window.history.pushState({}, '', '/tools/image/image-metadata-cleaner');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Image Metadata Cleaner' }, { timeout: 5000 })).toBeInTheDocument();
+    expect(await screen.findByText(/Drag & Drop Image/i, {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
   });
 

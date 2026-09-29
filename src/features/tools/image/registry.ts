@@ -6,6 +6,7 @@ import { imageCompressorConfig } from './image-compressor/config';
 import { imageResizerConfig } from './image-resizer/config';
 import { imageConverterConfig } from './image-converter/config';
 import { imageCropperConfig } from './image-cropper/config';
+import { imageMetadataCleanerConfig } from './image-metadata-cleaner/config';
 
 /**
  * Lazy-loaders for SHIPPED image tools.
@@ -18,6 +19,7 @@ export const IMAGE_TOOL_LOADERS: Record<string, () => Promise<ToolModule>> = {
   'image-resizer': () => import('./image-resizer'),
   'image-converter': () => import('./image-converter'),
   'image-cropper': () => import('./image-cropper'),
+  'image-metadata-cleaner': () => import('./image-metadata-cleaner'),
 };
 
 /**
@@ -33,6 +35,7 @@ export const ALL_IMAGE_TOOLS: Tool[] = [
   imageResizerConfig,
   imageConverterConfig,
   imageCropperConfig,
+  imageMetadataCleanerConfig,
 ];
 
 /**
@@ -56,6 +59,7 @@ export const ACTIVE_IMAGE_TOOL_SLUGS: string[] = [
   'image-resizer',
   'image-converter',
   'image-cropper',
+  'image-metadata-cleaner',
 ];
 
 /**

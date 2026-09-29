@@ -123,6 +123,10 @@ export default function App() {
           title = 'Image Cropper - Crop Images Online | Zorli';
           description =
             'Crop JPG, PNG and WebP images online. Choose custom or social-media aspect ratios, adjust your crop, and download the result.';
+        } else if (tool.slug === 'image-metadata-cleaner') {
+          title = 'Image Metadata Cleaner - Remove Image Metadata Online | Zorli';
+          description =
+            'View image metadata and create a cleaner copy of your JPG, PNG, or WebP image. Check EXIF and other supported metadata before sharing.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

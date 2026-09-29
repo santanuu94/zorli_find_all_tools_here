@@ -119,6 +119,10 @@ export default function App() {
           title = 'Image Converter - Convert JPG, PNG & WebP Online | Zorli';
           description =
             'Convert JPG, PNG and WebP images online with Zorli. Choose your output format, adjust quality when available, and download your converted images.';
+        } else if (tool.slug === 'image-cropper') {
+          title = 'Image Cropper - Crop Images Online | Zorli';
+          description =
+            'Crop JPG, PNG and WebP images online. Choose custom or social-media aspect ratios, adjust your crop, and download the result.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

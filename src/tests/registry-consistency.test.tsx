@@ -48,6 +48,7 @@ describe('Tool registry consistency', () => {
     expect(searchTools('compressor').map((tool) => tool.slug)).toEqual(['image-compressor']);
     expect(searchTools('resizer').map((tool) => tool.slug)).toEqual(['image-resizer']);
     expect(searchTools('converter').map((tool) => tool.slug)).toEqual(['image-converter']);
+    expect(searchTools('cropper').map((tool) => tool.slug)).toEqual(['image-cropper']);
     expect(searchTools('pdf merger')).toEqual([]);
   });
 });
@@ -65,6 +66,7 @@ describe('Deep-link routing', () => {
     expect(screen.getByText('Image Compressor')).toBeInTheDocument();
     expect(screen.getByText('Image Resizer')).toBeInTheDocument();
     expect(screen.getByText('Image Converter')).toBeInTheDocument();
+    expect(screen.getByText('Image Cropper')).toBeInTheDocument();
   });
 
   test('deep link to active tool loads the working studio workspace', async () => {
@@ -91,6 +93,15 @@ describe('Deep-link routing', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Image Converter' }, { timeout: 5000 })).toBeInTheDocument();
     expect(await screen.findByText(/Drop images to convert, or browse/i, {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
+  });
+
+  test('deep link to image-cropper loads the working studio workspace', async () => {
+    window.history.pushState({}, '', '/tools/image/image-cropper');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Image Cropper' }, { timeout: 5000 })).toBeInTheDocument();
+    expect(await screen.findByText(/Drop images to crop, or browse/i, {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
   });
 

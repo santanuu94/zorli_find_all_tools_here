@@ -5,6 +5,7 @@ import { Tool } from '../../../types';
 import { imageCompressorConfig } from './image-compressor/config';
 import { imageResizerConfig } from './image-resizer/config';
 import { imageConverterConfig } from './image-converter/config';
+import { imageCropperConfig } from './image-cropper/config';
 
 /**
  * Lazy-loaders for SHIPPED image tools.
@@ -16,6 +17,7 @@ export const IMAGE_TOOL_LOADERS: Record<string, () => Promise<ToolModule>> = {
   'image-compressor': () => import('./image-compressor'),
   'image-resizer': () => import('./image-resizer'),
   'image-converter': () => import('./image-converter'),
+  'image-cropper': () => import('./image-cropper'),
 };
 
 /**
@@ -30,6 +32,7 @@ export const ALL_IMAGE_TOOLS: Tool[] = [
   imageCompressorConfig,
   imageResizerConfig,
   imageConverterConfig,
+  imageCropperConfig,
 ];
 
 /**
@@ -52,6 +55,7 @@ export const ACTIVE_IMAGE_TOOL_SLUGS: string[] = [
   'image-compressor',
   'image-resizer',
   'image-converter',
+  'image-cropper',
 ];
 
 /**

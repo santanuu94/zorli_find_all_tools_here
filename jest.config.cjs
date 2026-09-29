@@ -30,6 +30,7 @@ const config = {
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss)$': '<rootDir>/jest.styleMock.cjs',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   collectCoverageFrom: ['src/**/*.{ts,tsx}'],

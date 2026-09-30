@@ -127,6 +127,10 @@ export default function App() {
           title = 'Image Metadata Cleaner - Remove Image Metadata Online | Zorli';
           description =
             'View image metadata and create a cleaner copy of your JPG, PNG, or WebP image. Check EXIF and other supported metadata before sharing.';
+        } else if (tool.slug === 'image-background-remover') {
+          title = 'Image Background Remover - Remove Background Online | Zorli';
+          description =
+            'Remove image backgrounds online and create transparent PNG images. Process your image with Zorli’s background remover and download the result.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

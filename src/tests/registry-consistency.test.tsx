@@ -50,6 +50,7 @@ describe('Tool registry consistency', () => {
     expect(searchTools('converter').map((tool) => tool.slug)).toEqual(['image-converter']);
     expect(searchTools('cropper').map((tool) => tool.slug)).toEqual(['image-cropper']);
     expect(searchTools('metadata').map((tool) => tool.slug)).toEqual(['image-metadata-cleaner']);
+    expect(searchTools('background').map((tool) => tool.slug)).toEqual(['image-background-remover']);
     expect(searchTools('pdf merger')).toEqual([]);
   });
 });
@@ -69,6 +70,7 @@ describe('Deep-link routing', () => {
     expect(screen.getByText('Image Converter')).toBeInTheDocument();
     expect(screen.getByText('Image Cropper')).toBeInTheDocument();
     expect(screen.getByText('Image Metadata Cleaner')).toBeInTheDocument();
+    expect(screen.getByText('Image Background Remover')).toBeInTheDocument();
   });
 
   test('deep link to active tool loads the working studio workspace', async () => {
@@ -112,6 +114,15 @@ describe('Deep-link routing', () => {
     render(<App />);
 
     expect(await screen.findByRole('heading', { level: 1, name: 'Image Metadata Cleaner' }, { timeout: 5000 })).toBeInTheDocument();
+    expect(await screen.findByText(/Drag & Drop Image/i, {}, { timeout: 5000 })).toBeInTheDocument();
+    expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
+  });
+
+  test('deep link to image-background-remover loads the working studio workspace', async () => {
+    window.history.pushState({}, '', '/tools/image/image-background-remover');
+    render(<App />);
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Image Background Remover' }, { timeout: 5000 })).toBeInTheDocument();
     expect(await screen.findByText(/Drag & Drop Image/i, {}, { timeout: 5000 })).toBeInTheDocument();
     expect(screen.queryByText(/is not available yet/i)).not.toBeInTheDocument();
   });

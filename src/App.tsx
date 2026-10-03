@@ -97,6 +97,12 @@ export default function App() {
     } else if (currentPath === '/categories') {
       title = 'Categories — Zorli';
       description = 'Explore tools by category: Image, PDF, Developer, and more.';
+    } else if (currentPath === '/tools/pdf' || currentPath === '/categories/pdf' || currentPath === '/categories/pdfs') {
+      title = 'PDF Tools - Free Online PDF Utilities | Zorli';
+      description = 'Explore simple PDF tools from Zorli for compressing, merging, splitting and managing PDF files.';
+    } else if (currentPath === '/tools/image' || currentPath === '/tools/images' || currentPath === '/categories/images' || currentPath === '/categories/image') {
+      title = 'Image Tools — Zorli';
+      description = 'Everything you need to work with images — compress, resize, convert, edit and more. Fast, free and private. All in one place.';
     } else if (currentPath.startsWith('/categories/')) {
       const category = CATEGORIES.find((c) => c.slug === currentPath.replace('/categories/', ''));
       if (category) {
@@ -131,6 +137,10 @@ export default function App() {
           title = 'Image Background Remover - Remove Background Online | Zorli';
           description =
             'Remove image backgrounds online and create transparent PNG images. Process your image with Zorli’s background remover and download the result.';
+        } else if (tool.slug === 'pdf-compressor') {
+          title = 'PDF Compressor - Compress PDF to a Smaller Size | Zorli';
+          description =
+            'Compress PDF files online and reduce their file size. Choose a target size such as 1 MB, 2 MB or 5 MB and download the compressed PDF.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;
@@ -185,7 +195,13 @@ export default function App() {
   };
 
   const handleSelectCategory = (categorySlug: string) => {
-    handleNavigate(`/categories/${categorySlug}`);
+    if (categorySlug === 'pdf' || categorySlug === 'pdfs') {
+      handleNavigate('/tools/pdf');
+    } else if (categorySlug === 'image' || categorySlug === 'images') {
+      handleNavigate('/tools/image');
+    } else {
+      handleNavigate(`/categories/${categorySlug}`);
+    }
   };
 
   // Keyboard shortcut Cmd+K / Ctrl+K for search
@@ -250,7 +266,41 @@ export default function App() {
       );
     }
 
-    // 4. Specific Category Page: /categories/:slug
+    // 4. Category Pages: /tools/pdf, /tools/image, /categories/:slug
+    if (currentPath === '/tools/pdf' || currentPath === '/categories/pdf' || currentPath === '/categories/pdfs') {
+      const pdfCategory = CATEGORIES.find((c) => c.slug === 'pdf');
+      if (pdfCategory) {
+        return (
+          <Suspense fallback={RouteFallback}>
+            <CategoryPage
+              category={pdfCategory}
+              onNavigateHome={() => handleNavigate('/')}
+              onSelectTool={handleSelectTool}
+              onNavigateCategory={handleSelectCategory}
+              onNavigateTools={() => handleNavigate('/tools')}
+            />
+          </Suspense>
+        );
+      }
+    }
+
+    if (currentPath === '/tools/image' || currentPath === '/tools/images' || currentPath === '/categories/images' || currentPath === '/categories/image') {
+      const imageCategory = CATEGORIES.find((c) => c.slug === 'images' || c.slug === 'image');
+      if (imageCategory) {
+        return (
+          <Suspense fallback={RouteFallback}>
+            <CategoryPage
+              category={imageCategory}
+              onNavigateHome={() => handleNavigate('/')}
+              onSelectTool={handleSelectTool}
+              onNavigateCategory={handleSelectCategory}
+              onNavigateTools={() => handleNavigate('/tools')}
+            />
+          </Suspense>
+        );
+      }
+    }
+
     if (currentPath.startsWith('/categories/')) {
       const categorySlug = currentPath.replace('/categories/', '');
       const category = CATEGORIES.find((c) => c.slug === categorySlug);
@@ -262,6 +312,7 @@ export default function App() {
               onNavigateHome={() => handleNavigate('/')}
               onSelectTool={handleSelectTool}
               onNavigateCategory={handleSelectCategory}
+              onNavigateTools={() => handleNavigate('/tools')}
             />
           </Suspense>
         );

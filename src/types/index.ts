@@ -58,6 +58,13 @@ export interface ToolCategory {
     toolSlug: string;
     toolName: string;
   };
+  floatingBadges?: {
+    label: string;
+    iconName?: string;
+    bgClass: string;
+    positionClass: string;
+    animClass: string;
+  }[];
   whyBanner?: {
     headline: string;
     highlightWord: string;
@@ -67,6 +74,12 @@ export interface ToolCategory {
       title: string;
       description: string;
     }[];
+  };
+  seoContent?: {
+    sectionTitle: string;
+    sectionBody: string;
+    chooseTitle: string;
+    chooseBody: string;
   };
 }
 

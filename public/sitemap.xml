@@ -28,6 +28,16 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://zorli.pages.dev/tools/pdf</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zorli.pages.dev/tools/image</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://zorli.pages.dev/tools/images/image-compressor</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -54,6 +64,11 @@
   </url>
   <url>
     <loc>https://zorli.pages.dev/tools/images/image-background-remover</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://zorli.pages.dev/tools/pdf/pdf-compressor</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>

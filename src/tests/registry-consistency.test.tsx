@@ -45,7 +45,8 @@ describe('Tool registry consistency', () => {
   });
 
   test('search reaches the catalogue and never invents tools', () => {
-    expect(searchTools('compressor').map((tool) => tool.slug)).toEqual(['image-compressor']);
+    expect(searchTools('compressor').map((tool) => tool.slug)).toEqual(['image-compressor', 'pdf-compressor']);
+    expect(searchTools('pdf compressor').map((tool) => tool.slug)).toEqual(['pdf-compressor']);
     expect(searchTools('resizer').map((tool) => tool.slug)).toEqual(['image-resizer']);
     expect(searchTools('converter').map((tool) => tool.slug)).toEqual(['image-converter']);
     expect(searchTools('cropper').map((tool) => tool.slug)).toEqual(['image-cropper']);

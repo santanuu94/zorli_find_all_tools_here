@@ -5,12 +5,28 @@ import {
   ALL_IMAGE_TOOLS,
   IMAGE_TOOL_LOADERS,
 } from './image/registry';
+import {
+  ACTIVE_PDF_TOOL_SLUGS,
+  ALL_PDF_TOOLS,
+  PDF_TOOL_LOADERS,
+} from './pdf/registry';
 
 /**
  * Slugs of tools that are genuinely implemented, production-ready and exposed
  * to users.
  */
-export const ACTIVE_TOOL_SLUGS: string[] = ACTIVE_IMAGE_TOOL_METADATA;
+export const ACTIVE_TOOL_SLUGS: string[] = [
+  ...ACTIVE_IMAGE_TOOL_METADATA,
+  ...ACTIVE_PDF_TOOL_SLUGS,
+];
+
+/**
+ * All catalogued tools across all families (available + roadmap).
+ */
+export const ALL_TOOLS: Tool[] = [
+  ...ALL_IMAGE_TOOLS,
+  ...ALL_PDF_TOOLS,
+];
 
 /**
  * The tool catalogue rendered by the UI (cards, search, counts).
@@ -20,7 +36,7 @@ export const ACTIVE_TOOL_SLUGS: string[] = ACTIVE_IMAGE_TOOL_METADATA;
  * metadata and the UI badge to disagree — a tool is available here if and only
  * if it is listed in the active registry.
  */
-export const TOOLS: Tool[] = ALL_IMAGE_TOOLS.map((tool) => ({
+export const TOOLS: Tool[] = ALL_TOOLS.map((tool) => ({
   ...tool,
   status: ACTIVE_TOOL_SLUGS.includes(tool.slug) ? 'available' : 'coming-soon',
 }));
@@ -33,6 +49,7 @@ export const TOOLS: Tool[] = ALL_IMAGE_TOOLS.map((tool) => ({
  */
 const TOOL_MODULE_LOADERS: Record<string, () => Promise<ToolModule>> = {
   ...IMAGE_TOOL_LOADERS,
+  ...PDF_TOOL_LOADERS,
 };
 
 /**
@@ -65,13 +82,20 @@ export function getToolModuleBySlug(slug: string): Promise<ToolModule | undefine
  * Helper to get all tools in a specific category/family
  */
 export function getToolsByCategory(category: string): Tool[] {
-  // Support both singular and plural forms (e.g. image & images)
+  // Support both singular and plural forms (e.g. image & images, pdf & pdfs)
   return TOOLS.filter((t) => {
     if (t.category === category) return true;
     if (category === 'images' && t.category === 'image') return true;
-    if (category === 'image' && t.category === 'images') return true;
+    if (category === 'pdfs' && t.category === 'pdf') return true;
     return false;
   });
+}
+
+/**
+ * Helper to get only actively shipped tools in a category
+ */
+export function getActiveToolsByCategory(category: string): Tool[] {
+  return getToolsByCategory(category).filter((t) => t.status === 'available');
 }
 
 /**

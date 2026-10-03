@@ -1,3 +1,4 @@
 export * from './types';
 export { metadata } from './metadata';
-export { PdfCompressor as Component } from './PdfCompressor';
+export { pdfCompressorConfig } from './config';
+export { PdfCompressor as Component } from './components/PdfCompressor';

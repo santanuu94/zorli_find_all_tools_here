@@ -145,6 +145,10 @@ export default function App() {
           title = 'PDF Merger - Combine PDF Files Online | Zorli';
           description =
             'Combine multiple PDF files into one document with Zorli. Upload your PDFs, arrange their order, and download the merged file.';
+        } else if (tool.slug === 'pdf-splitter') {
+          title = 'PDF Splitter - Split PDF Files Online | Zorli';
+          description =
+            'Split PDF files online by page range, extract individual pages, or divide documents into smaller PDFs. Preview your output and download the results.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

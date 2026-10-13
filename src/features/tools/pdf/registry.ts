@@ -2,6 +2,7 @@ import { ToolModule, ToolFamilyRegistry } from '../types';
 import { Tool } from '../../../types';
 import { metadata as pdfCompressorMetadata } from './pdf-compressor/metadata';
 import { metadata as pdfMergerMetadata } from './pdf-merger/metadata';
+import { metadata as pdfSplitterMetadata } from './pdf-splitter/metadata';
 
 /**
  * Lazy-loaders for SHIPPED PDF tools.
@@ -12,6 +13,7 @@ import { metadata as pdfMergerMetadata } from './pdf-merger/metadata';
 export const PDF_TOOL_LOADERS: Record<string, () => Promise<ToolModule>> = {
   'pdf-compressor': () => import('./pdf-compressor'),
   'pdf-merger': () => import('./pdf-merger'),
+  'pdf-splitter': () => import('./pdf-splitter'),
 };
 
 /**
@@ -26,6 +28,7 @@ export const PDF_TOOL_MODULES: ToolModule[] = [];
 export const ACTIVE_PDF_TOOL_SLUGS: string[] = [
   'pdf-compressor',
   'pdf-merger',
+  'pdf-splitter',
 ];
 
 /**
@@ -39,6 +42,7 @@ export const ACTIVE_PDF_TOOL_METADATA: string[] = ACTIVE_PDF_TOOL_SLUGS;
 export const ALL_PDF_TOOLS: Tool[] = [
   pdfCompressorMetadata,
   pdfMergerMetadata,
+  pdfSplitterMetadata,
 ];
 
 export const PDF_FAMILY: ToolFamilyRegistry = {

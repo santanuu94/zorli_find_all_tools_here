@@ -16,15 +16,16 @@ describe('PDF Tools Family Landing Page (/tools/pdf)', () => {
     expect(pdfCategory?.shortName).toBe('PDF');
     expect(pdfCategory?.toolsCount).toBe(countCategoryTools('pdf'));
     expect(pdfCategory?.availableToolsCount).toBe(countAvailableCategoryTools('pdf'));
-    expect(pdfCategory?.availableToolsCount).toBe(2); // 2 active tools: PDF Compressor & PDF Merger
+    expect(pdfCategory?.availableToolsCount).toBe(3); // 3 active tools: PDF Compressor, PDF Merger, PDF Splitter
   });
 
   test('getActiveToolsByCategory returns only available tools', () => {
     const activePdfTools = getActiveToolsByCategory('pdf');
-    expect(activePdfTools.length).toBe(2);
+    expect(activePdfTools.length).toBe(3);
     const slugs = activePdfTools.map((t) => t.slug);
     expect(slugs).toContain('pdf-compressor');
     expect(slugs).toContain('pdf-merger');
+    expect(slugs).toContain('pdf-splitter');
 
     const activeImageTools = getActiveToolsByCategory('images');
     expect(activeImageTools.length).toBe(6);
@@ -50,10 +51,11 @@ describe('PDF Tools Family Landing Page (/tools/pdf)', () => {
     const canonicalLink = document.querySelector("link[rel='canonical']");
     expect(canonicalLink?.getAttribute('href')).toBe('https://zorli.pages.dev/tools/pdf');
 
-    // 4. Both active tools appear in the grid
+    // 4. All three active tools appear in the grid
     expect(screen.getByText('PDF Compressor')).toBeInTheDocument();
     expect(screen.getByText('PDF Merger')).toBeInTheDocument();
-    expect(screen.getByText(/2 tools available/i)).toBeInTheDocument();
+    expect(screen.getByText('PDF Splitter')).toBeInTheDocument();
+    expect(screen.getByText(/3 tools available/i)).toBeInTheDocument();
 
     // 5. Semantic SEO Content Sections
     const h2Headings = screen.getAllByRole('heading', { level: 2 });
@@ -88,6 +90,19 @@ describe('PDF Tools Family Landing Page (/tools/pdf)', () => {
     const dropzonePrompt = await screen.findByText(/Drag & Drop PDF files here/i, {}, { timeout: 5000 });
     expect(dropzonePrompt).toBeInTheDocument();
     expect(screen.getByText('Select PDF Files')).toBeInTheDocument();
+  });
+
+  test('navigating directly to /tools/pdf/pdf-splitter renders the PDF Splitter tool page', async () => {
+    window.history.pushState({}, '', '/tools/pdf/pdf-splitter');
+    render(<App />);
+
+    const h1Heading = await screen.findByRole('heading', { level: 1, name: /PDF\s+Splitter/i }, { timeout: 5000 });
+    expect(h1Heading).toBeInTheDocument();
+    expect(document.title).toBe('PDF Splitter - Split PDF Files Online | Zorli');
+
+    // Dropzone prompt (loaded via async dynamic import)
+    const dropzonePrompt = await screen.findByText(/Drop your PDF here/i, {}, { timeout: 5000 });
+    expect(dropzonePrompt).toBeInTheDocument();
   });
 
   test('navigating to /tools/image still renders the Image Tools landing page with 6 active tools', async () => {

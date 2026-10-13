@@ -53,6 +53,7 @@ describe('Tool registry consistency', () => {
     expect(searchTools('metadata').map((tool) => tool.slug)).toEqual(['image-metadata-cleaner']);
     expect(searchTools('background').map((tool) => tool.slug)).toEqual(['image-background-remover']);
     expect(searchTools('pdf merger').map((tool) => tool.slug)).toEqual(['pdf-merger']);
+    expect(searchTools('pdf splitter').map((tool) => tool.slug)).toEqual(['pdf-splitter']);
   });
 });
 

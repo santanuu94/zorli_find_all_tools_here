@@ -16,13 +16,15 @@ describe('PDF Tools Family Landing Page (/tools/pdf)', () => {
     expect(pdfCategory?.shortName).toBe('PDF');
     expect(pdfCategory?.toolsCount).toBe(countCategoryTools('pdf'));
     expect(pdfCategory?.availableToolsCount).toBe(countAvailableCategoryTools('pdf'));
-    expect(pdfCategory?.availableToolsCount).toBe(1); // 1 active tool: PDF Compressor
+    expect(pdfCategory?.availableToolsCount).toBe(2); // 2 active tools: PDF Compressor & PDF Merger
   });
 
   test('getActiveToolsByCategory returns only available tools', () => {
     const activePdfTools = getActiveToolsByCategory('pdf');
-    expect(activePdfTools.length).toBe(1);
-    expect(activePdfTools[0].slug).toBe('pdf-compressor');
+    expect(activePdfTools.length).toBe(2);
+    const slugs = activePdfTools.map((t) => t.slug);
+    expect(slugs).toContain('pdf-compressor');
+    expect(slugs).toContain('pdf-merger');
 
     const activeImageTools = getActiveToolsByCategory('images');
     expect(activeImageTools.length).toBe(6);
@@ -48,9 +50,10 @@ describe('PDF Tools Family Landing Page (/tools/pdf)', () => {
     const canonicalLink = document.querySelector("link[rel='canonical']");
     expect(canonicalLink?.getAttribute('href')).toBe('https://zorli.pages.dev/tools/pdf');
 
-    // 4. PDF Compressor card automatically appears in the grid
+    // 4. Both active tools appear in the grid
     expect(screen.getByText('PDF Compressor')).toBeInTheDocument();
-    expect(screen.getByText(/1 tool available/i)).toBeInTheDocument();
+    expect(screen.getByText('PDF Merger')).toBeInTheDocument();
+    expect(screen.getByText(/2 tools available/i)).toBeInTheDocument();
 
     // 5. Semantic SEO Content Sections
     const h2Headings = screen.getAllByRole('heading', { level: 2 });
@@ -71,6 +74,20 @@ describe('PDF Tools Family Landing Page (/tools/pdf)', () => {
     const dropzonePrompt = await screen.findByText('Drag & Drop PDF', {}, { timeout: 5000 });
     expect(dropzonePrompt).toBeInTheDocument();
     expect(screen.getByText('Select PDF File')).toBeInTheDocument();
+  });
+
+  test('navigating directly to /tools/pdf/pdf-merger renders the PDF Merger tool page', async () => {
+    window.history.pushState({}, '', '/tools/pdf/pdf-merger');
+    render(<App />);
+
+    const h1Heading = await screen.findByRole('heading', { level: 1, name: /PDF\s+Merger/i }, { timeout: 5000 });
+    expect(h1Heading).toBeInTheDocument();
+    expect(document.title).toBe('PDF Merger - Combine PDF Files Online | Zorli');
+
+    // Dropzone prompt (loaded via async dynamic import)
+    const dropzonePrompt = await screen.findByText(/Drag & Drop PDF files here/i, {}, { timeout: 5000 });
+    expect(dropzonePrompt).toBeInTheDocument();
+    expect(screen.getByText('Select PDF Files')).toBeInTheDocument();
   });
 
   test('navigating to /tools/image still renders the Image Tools landing page with 6 active tools', async () => {

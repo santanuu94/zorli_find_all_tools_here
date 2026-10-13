@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   CheckCircle2,
   AlertTriangle,
@@ -9,9 +9,11 @@ import {
   ArrowRight,
   ShieldCheck,
   Info,
+  Eye,
 } from 'lucide-react';
 import { CompressionResult, PdfFileInfo } from '../types';
 import { formatFileSize } from '../lib/format-utils';
+import { PdfPreviewModal } from '../../components/PdfPreviewModal';
 
 interface CompressionResultsProps {
   fileInfo: PdfFileInfo;
@@ -30,6 +32,7 @@ export const CompressionResults: React.FC<CompressionResultsProps> = ({
   onCompressAnyway,
   onDownloadOriginal,
 }) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const isTargetAchieved = result.targetResultState === 'target_achieved';
   const isAlreadySmaller = result.targetResultState === 'already_smaller';
   const isAlreadyMinimal = result.targetResultState === 'already_minimal';
@@ -170,6 +173,17 @@ export const CompressionResults: React.FC<CompressionResultsProps> = ({
 
       {/* 3. Primary Actions: Download & Reset */}
       <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        {result.downloadUrl && (
+          <button
+            type="button"
+            onClick={() => setIsPreviewOpen(true)}
+            className="py-3.5 px-6 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-300 font-bold text-sm transition-all border border-rose-500/25 cursor-pointer flex items-center justify-center gap-2"
+          >
+            <Eye className="w-4 h-4" />
+            <span>See Output PDF</span>
+          </button>
+        )}
+
         <button
           type="button"
           onClick={onDownload}
@@ -188,6 +202,19 @@ export const CompressionResults: React.FC<CompressionResultsProps> = ({
           <span>Compress Another PDF</span>
         </button>
       </div>
+
+      {/* 4. PDF Preview Modal */}
+      {result.downloadUrl && (
+        <PdfPreviewModal
+          isOpen={isPreviewOpen}
+          onClose={() => setIsPreviewOpen(false)}
+          title={fileInfo.name}
+          pdfUrl={result.downloadUrl}
+          pageCount={result.pageCount}
+          fileSize={result.compressedSize}
+          onDownload={onDownload}
+        />
+      )}
     </div>
   );
 };

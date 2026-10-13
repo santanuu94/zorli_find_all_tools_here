@@ -141,6 +141,10 @@ export default function App() {
           title = 'PDF Compressor - Compress PDF to a Smaller Size | Zorli';
           description =
             'Compress PDF files online and reduce their file size. Choose a target size such as 1 MB, 2 MB or 5 MB and download the compressed PDF.';
+        } else if (tool.slug === 'pdf-merger') {
+          title = 'PDF Merger - Combine PDF Files Online | Zorli';
+          description =
+            'Combine multiple PDF files into one document with Zorli. Upload your PDFs, arrange their order, and download the merged file.';
         } else {
           title = `${tool.name}${tool.status === 'coming-soon' ? ' (Coming Soon)' : ''} — Zorli`;
           description = tool.description;

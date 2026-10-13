@@ -1,6 +1,7 @@
 import { ToolModule, ToolFamilyRegistry } from '../types';
 import { Tool } from '../../../types';
 import { metadata as pdfCompressorMetadata } from './pdf-compressor/metadata';
+import { metadata as pdfMergerMetadata } from './pdf-merger/metadata';
 
 /**
  * Lazy-loaders for SHIPPED PDF tools.
@@ -10,6 +11,7 @@ import { metadata as pdfCompressorMetadata } from './pdf-compressor/metadata';
  */
 export const PDF_TOOL_LOADERS: Record<string, () => Promise<ToolModule>> = {
   'pdf-compressor': () => import('./pdf-compressor'),
+  'pdf-merger': () => import('./pdf-merger'),
 };
 
 /**
@@ -21,7 +23,10 @@ export const PDF_TOOL_MODULES: ToolModule[] = [];
  * Active tool slugs — the single source of truth for what is "live".
  * Only slugs listed here may be rendered as available.
  */
-export const ACTIVE_PDF_TOOL_SLUGS: string[] = ['pdf-compressor'];
+export const ACTIVE_PDF_TOOL_SLUGS: string[] = [
+  'pdf-compressor',
+  'pdf-merger',
+];
 
 /**
  * Metadata keys for active tools only.
@@ -31,7 +36,10 @@ export const ACTIVE_PDF_TOOL_METADATA: string[] = ACTIVE_PDF_TOOL_SLUGS;
 /**
  * All catalogued PDF tools (available + upcoming roadmap).
  */
-export const ALL_PDF_TOOLS: Tool[] = [pdfCompressorMetadata];
+export const ALL_PDF_TOOLS: Tool[] = [
+  pdfCompressorMetadata,
+  pdfMergerMetadata,
+];
 
 export const PDF_FAMILY: ToolFamilyRegistry = {
   family: 'pdf',

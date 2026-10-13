@@ -1,6 +1,7 @@
-import React from 'react';
-import { Download, RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Download, RefreshCw, CheckCircle, AlertTriangle, Eye } from 'lucide-react';
 import { RemovalItem } from '../types';
+import { RemoverPreviewModal } from './RemoverPreviewModal';
 
 interface RemoverResultDetailsProps {
   item: RemovalItem;
@@ -25,6 +26,7 @@ export const RemoverResultDetails: React.FC<RemoverResultDetailsProps> = ({
   onRetry,
   disabled = false,
 }) => {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const isDone = item.status === 'done';
   const isError = item.status === 'error';
 
@@ -78,15 +80,27 @@ export const RemoverResultDetails: React.FC<RemoverResultDetailsProps> = ({
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row items-center gap-3">
         {isDone && (
-          <button
-            type="button"
-            onClick={onDownload}
-            disabled={disabled}
-            className="w-full sm:flex-1 py-3 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-500 via-indigo-600 to-electric-blue text-white shadow-[0_0_25px_rgba(99,102,241,0.35)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            Download PNG
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => setIsPreviewOpen(true)}
+              disabled={disabled}
+              className="w-full sm:w-auto py-3 px-5 rounded-xl font-medium text-sm border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20 hover:text-white transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <Eye className="w-4 h-4 text-indigo-400" />
+              <span>See Output</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onDownload}
+              disabled={disabled}
+              className="w-full sm:flex-1 py-3 px-6 rounded-xl font-semibold text-sm bg-gradient-to-r from-indigo-500 via-indigo-600 to-electric-blue text-white shadow-[0_0_25px_rgba(99,102,241,0.35)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Download PNG
+            </button>
+          </>
         )}
 
         {isError && (
@@ -110,6 +124,14 @@ export const RemoverResultDetails: React.FC<RemoverResultDetailsProps> = ({
           New Image
         </button>
       </div>
+
+      {/* Preview Modal */}
+      <RemoverPreviewModal
+        item={item}
+        isOpen={isPreviewOpen}
+        onClose={() => setIsPreviewOpen(false)}
+        onDownload={onDownload}
+      />
     </div>
   );
 };
